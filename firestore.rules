@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // Members collection: Users can read/write their own profile
+    match /members/{memberId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && isOwner(memberId);
+    }
+
+    // Membership Cards: Read-only for signed-in users, system-written
+    match /membershipCards/{cardId} {
+      allow read: if isSignedIn();
+      allow write: if false; // Only admin/server-side can issue cards
+    }
+
+    // Posts: Everyone can read, authors can write
+    match /posts/{postId} {
+      allow read: if true;
+      allow create: if isSignedIn();
+      allow update, delete: if isSignedIn() && isOwner(resource.data.authorId);
+    }
+
+    // Drive Logs: Private logs
+    match /driveLogs/{logId} {
+      allow read, write: if isSignedIn() && isOwner(request.auth.uid);
+    }
+  }
+}

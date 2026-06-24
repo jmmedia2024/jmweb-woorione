@@ -1,0 +1,46 @@
+{
+  "collections": {
+    "members": {
+      "description": "우리원 및 R.ef 팬클럽 회원 정보",
+      "fields": {
+        "email": { "type": "string", "description": "회원 이메일 (Unique ID)" },
+        "displayName": { "type": "string", "description": "활동명/실명" },
+        "membershipTier": { "type": "string", "description": "등급 (GOLD, BLACK, NORMAL)" },
+        "joinDate": { "type": "timestamp", "description": "가입 일시" },
+        "isActive": { "type": "boolean", "description": "활동 여부" },
+        "phoneNumber": { "type": "string", "description": "연락처 (마스킹 처리 권장)" }
+      }
+    },
+    "membershipCards": {
+      "description": "발급된 디지털 VIP 멤버십 카드 정보",
+      "fields": {
+        "memberId": { "type": "string", "description": "소유 회원 ID" },
+        "cardNumber": { "type": "string", "description": "카드 고유 번호 (예: REF-2025-XXXX)" },
+        "cardType": { "type": "string", "description": "카드 종류 (GOLD_PREMIUM, BLACK_VIP)" },
+        "issueDate": { "type": "timestamp", "description": "발급일" },
+        "expiryDate": { "type": "timestamp", "description": "만료일" }
+      }
+    },
+    "posts": {
+      "description": "커뮤니티 및 공지사항 게시물",
+      "fields": {
+        "title": { "type": "string", "description": "제목" },
+        "content": { "type": "string", "description": "내용 (HTML/Markdown)" },
+        "authorId": { "type": "string", "description": "작성자 ID" },
+        "category": { "type": "string", "description": "분류 (NOTICE, FREE, GALLERY)" },
+        "createdAt": { "type": "timestamp", "description": "작성 일시" },
+        "viewCount": { "type": "number", "description": "조회수" }
+      }
+    },
+    "driveLogs": {
+      "description": "구글 드라이브 연동 및 백업 활동 로그",
+      "fields": {
+        "fileId": { "type": "string", "description": "드라이브 파일 ID" },
+        "fileName": { "type": "string", "description": "파일명" },
+        "action": { "type": "string", "description": "동작 (VIEW, DOWNLOAD, BACKUP)" },
+        "timestamp": { "type": "timestamp", "description": "발생 시간" },
+        "performedBy": { "type": "string", "description": "수행자 ID" }
+      }
+    }
+  }
+}
