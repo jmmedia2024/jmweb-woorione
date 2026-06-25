@@ -44,15 +44,15 @@ export default function History({ fontRatio, highContrast }: HistoryProps) {
   const renderIcon = (type: string) => {
     switch (type) {
       case "people":
-        return <Users className="w-5 h-5 text-blue-600 font-extrabold" />;
+        return <Users className="w-5 h-5 text-zinc-800 font-bold" />;
       case "heart":
-        return <Heart className="w-5 h-5 text-rose-500 animate-pulse font-extrabold" />;
+        return <Heart className="w-5 h-5 text-rose-500 animate-pulse font-bold" />;
       case "globe":
-        return <Globe className="w-5 h-5 text-indigo-500 font-extrabold" />;
+        return <Globe className="w-5 h-5 text-indigo-500 font-bold" />;
       case "award":
-        return <Award className="w-5 h-5 text-orange-500 font-extrabold" />;
+        return <Award className="w-5 h-5 text-orange-500 font-bold" />;
       default:
-        return <Sparkles className="w-5 h-5 text-emerald-500 font-extrabold" />;
+        return <Sparkles className="w-5 h-5 text-emerald-500 font-bold" />;
     }
   };
 
@@ -60,17 +60,17 @@ export default function History({ fontRatio, highContrast }: HistoryProps) {
     <div style={{ fontSize: `${16 * fontRatio}px` }} className="space-y-12 animate-fade-in pb-16">
       
       {/* Header Profile Info */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-slate-100 pb-6 text-left">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-zinc-200/60 pb-6 text-left">
         <div className="space-y-3">
-          <span className={`inline-flex items-center gap-1.5 text-xs font-black px-3.5 py-1.5 rounded-full uppercase tracking-widest ${
-            highContrast ? "bg-black border border-yellow-400 text-yellow-300" : "bg-blue-50 text-blue-700"
+          <span className={`inline-flex items-center gap-1.5 text-xs font-bold px-3.5 py-1.5 rounded-full uppercase tracking-widest ${
+            highContrast ? "bg-black border border-yellow-400 text-yellow-300" : "bg-zinc-100 text-blue-700"
           }`}>
             ★ 우리원 발자취
           </span>
-          <h1 className={`text-3xl md:text-4xl font-extrabold tracking-tight ${highContrast ? "text-yellow-300" : "text-slate-900"}`}>
+          <h1 className={`text-lg md:text-xl font-bold tracking-tight ${highContrast ? "text-yellow-300" : "text-zinc-900"}`}>
             조직 연혁 상생 타임라인
           </h1>
-          <p className={`text-sm ${highContrast ? "text-yellow-400/90" : "text-slate-500 font-semibold"}`}>
+          <p className={`text-sm ${highContrast ? "text-yellow-400/90" : "text-zinc-500 font-semibold"}`}>
             이웃을 돕는 풀뿌리 자원봉사회에서 시작해 서울 및 충남 전역의 한마음 공익 연합 체계 도약에 이르기까지 정착의 역사입니다.
           </p>
         </div>
@@ -80,10 +80,10 @@ export default function History({ fontRatio, highContrast }: HistoryProps) {
           <button
             id="btn-timeline-toggle-sort"
             onClick={() => setSortOrder(prev => prev === "asc" ? "desc" : "asc")}
-            className={`px-4.5 py-2.5 rounded-xl border font-black text-xs flex items-center gap-2 transition-all cursor-pointer ${
+            className={`px-4.5 py-2.5 rounded-xl border font-bold text-xs flex items-center gap-2 transition-all cursor-pointer ${
               highContrast 
                 ? "bg-black text-yellow-300 border-yellow-400 hover:bg-neutral-900" 
-                : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50 shadow-3xs"
+                : "bg-white border-zinc-200 text-slate-700 hover:bg-slate-50 shadow-3xs"
             }`}
           >
             <ArrowUpDown className="w-3.5 h-3.5 text-blue-500" />
@@ -99,9 +99,9 @@ export default function History({ fontRatio, highContrast }: HistoryProps) {
           <div className={`p-5 rounded-2xl border transition-all ${
             highContrast 
               ? "bg-black border-yellow-400 text-yellow-300" 
-              : "bg-white border-slate-100 shadow-[0_12px_36px_rgba(30,41,59,0.02)]"
+              : "bg-white border-zinc-200/60 shadow-lg shadow-zinc-200/50"
           }`}>
-            <h3 className="font-extrabold text-xs text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+            <h3 className="font-bold text-xs text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5 text-blue-500" />
               연도별 빠른 이동
             </h3>
@@ -114,7 +114,7 @@ export default function History({ fontRatio, highContrast }: HistoryProps) {
                   className={`px-3 py-1.5 lg:px-4 lg:py-2 rounded-lg text-xs font-bold text-left transition-all duration-200 cursor-pointer w-auto lg:w-full flex items-center justify-between group ${
                     highContrast
                       ? "bg-black text-yellow-300 border border-yellow-500 hover:bg-neutral-900"
-                      : "bg-slate-50 text-slate-650 hover:bg-blue-50 hover:text-blue-700 hover:translate-x-1"
+                      : "bg-slate-50 text-slate-650 hover:bg-zinc-100 hover:text-blue-700 hover:translate-x-1"
                   }`}
                 >
                   <span>{year}년도 성과</span>
@@ -159,13 +159,13 @@ export default function History({ fontRatio, highContrast }: HistoryProps) {
                           : "bg-white border-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.3)] group-hover:scale-115 group-hover:border-indigo-605"
                       }`}
                     >
-                      <div className={`w-1.5 h-1.5 rounded-full ${highContrast ? "bg-yellow-300" : "bg-blue-600 animate-pulse"}`} />
+                      <div className={`w-1.5 h-1.5 rounded-full ${highContrast ? "bg-yellow-300" : "bg-zinc-800 animate-pulse"}`} />
                     </motion.div>
                   </div>
 
                   {/* Horizontal small branch pointer line */}
                   <div className={`absolute left-[-18px] md:left-[-30px] top-[24px] w-4.5 md:w-7.5 h-px border-t overflow-hidden ${
-                    highContrast ? "border-yellow-400" : "border-slate-200"
+                    highContrast ? "border-yellow-400" : "border-zinc-200"
                   }`} />
 
                   {/* Scroll Triggered Milestone Card with Reveal animations */}
@@ -177,7 +177,7 @@ export default function History({ fontRatio, highContrast }: HistoryProps) {
                     className={`rounded-2xl border p-6 transition-all duration-300 relative ${
                       highContrast 
                         ? "bg-black border-yellow-400 text-yellow-305" 
-                        : "bg-white border-slate-100 hover:border-slate-200 shadow-[0_4px_22px_rgba(0,0,0,0.015)] hover:shadow-[0_16px_36px_rgba(59,130,246,0.04)] hover:-translate-y-0.5"
+                        : "bg-white border-zinc-200/60 hover:border-zinc-200 shadow-lg shadow-zinc-200/50 hover:shadow-xl hover:shadow-zinc-300/60 hover:-translate-y-0.5"
                     }`}
                   >
                     
@@ -185,16 +185,16 @@ export default function History({ fontRatio, highContrast }: HistoryProps) {
                     <div className="flex items-start gap-4 justify-between">
                       <div className="space-y-1.5">
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className={`font-mono font-black text-[11px] uppercase tracking-wider px-2.5 py-0.5 rounded ${
-                            highContrast ? "bg-yellow-450 text-black font-extrabold" : "bg-blue-50 text-blue-600"
+                          <span className={`font-mono font-bold text-[11px] uppercase tracking-wider px-2.5 py-0.5 rounded ${
+                            highContrast ? "bg-yellow-450 text-black font-bold" : "bg-zinc-100 text-zinc-800"
                           }`}>
                             {m.date}
                           </span>
                           <span className="text-slate-400 font-bold text-xs">{m.year}년 마일스톤</span>
                         </div>
                         
-                        <h3 className={`font-black text-base md:text-lg tracking-tight leading-snug ${
-                          highContrast ? "text-yellow-300" : "text-slate-900 hover:text-blue-700 transition-colors"
+                        <h3 className={`font-bold text-base md:text-lg tracking-tight leading-snug ${
+                          highContrast ? "text-yellow-300" : "text-zinc-900 hover:text-blue-700 transition-colors"
                         }`}>
                           {m.title}
                         </h3>
@@ -202,7 +202,7 @@ export default function History({ fontRatio, highContrast }: HistoryProps) {
 
                       {/* Icon container */}
                       <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 shadow-3xs ${
-                        highContrast ? "bg-yellow-300 text-black" : "bg-slate-50 border border-slate-100"
+                        highContrast ? "bg-yellow-300 text-black" : "bg-slate-50 border border-zinc-200/60"
                       }`}>
                         {renderIcon(m.iconType || "")}
                       </div>
@@ -216,11 +216,11 @@ export default function History({ fontRatio, highContrast }: HistoryProps) {
                     </p>
 
                     {/* Interactive "더 보기" expandable facts - reveals extra text context natively on scroll/click triggers */}
-                    <div className="mt-4 pt-4 border-t border-slate-100/60 font-semibold text-xs">
+                    <div className="mt-4 pt-4 border-t border-zinc-200/60 font-semibold text-xs">
                       <button
                         onClick={() => toggleExpand(idx)}
                         className={`flex items-center gap-1.5 hover:underline font-bold transition-all cursor-pointer ${
-                          highContrast ? "text-yellow-300" : "text-blue-600 hover:text-blue-800"
+                          highContrast ? "text-yellow-300" : "text-zinc-800 hover:text-blue-800"
                         }`}
                       >
                         <span>{isExpanded ? "상세 기록 닫기" : "공익 기여 분석 & 상세 내역 관람"}</span>
@@ -237,9 +237,9 @@ export default function History({ fontRatio, highContrast }: HistoryProps) {
                             className="overflow-hidden"
                           >
                             <div className={`mt-3 p-4 rounded-xl text-left space-y-2.5 leading-relaxed leading-relaxed ${
-                              highContrast ? "bg-neutral-900 text-yellow-250 border border-yellow-500" : "bg-slate-50/75 text-slate-550 border border-slate-100"
+                              highContrast ? "bg-neutral-900 text-yellow-250 border border-yellow-500" : "bg-slate-50/75 text-slate-550 border border-zinc-200/60"
                             }`}>
-                              <p className="font-extrabold text-[11px] text-blue-500">
+                              <p className="font-bold text-[11px] text-blue-500">
                                 💡 주요 사회적 가치 기여:
                               </p>
                               <p className="text-[11px] leading-relaxed">
@@ -252,10 +252,10 @@ export default function History({ fontRatio, highContrast }: HistoryProps) {
                                 {m.year === 2024 && "제1회 탈북민의 날 국빈 자격 초청 및 위기 세대의 온정이 기거하는 단 임시 쉼터를 가용화해 무연고 청장년·노인 가구 정착에 대단한 기틀을 구축했습니다."}
                               </p>
                               <div className="flex flex-wrap gap-1.5 pt-1">
-                                <span className="bg-white px-2 py-0.5 rounded border border-slate-100 text-[10px] text-slate-500">
+                                <span className="bg-white px-2 py-0.5 rounded border border-zinc-200/60 text-[10px] text-zinc-500">
                                   #투명공익성
                                 </span>
-                                <span className="bg-white px-2 py-0.5 rounded border border-slate-100 text-[10px] text-slate-500">
+                                <span className="bg-white px-2 py-0.5 rounded border border-zinc-200/60 text-[10px] text-zinc-500">
                                   #탈북민사회통합
                                 </span>
                               </div>
@@ -279,9 +279,9 @@ export default function History({ fontRatio, highContrast }: HistoryProps) {
         <div className={`p-6 rounded-2xl border text-left ${
           highContrast ? "bg-black border-yellow-400 text-yellow-300" : "bg-white border-slate-150/70"
         }`}>
-          <h4 className="font-extrabold text-xs text-blue-600 uppercase tracking-wider mb-1">STATION 1</h4>
-          <h3 className="font-black text-base text-slate-800">풀뿌리 자원봉사회</h3>
-          <p className="text-slate-500 font-semibold text-xs leading-relaxed mt-2">
+          <h4 className="font-bold text-xs text-zinc-800 uppercase tracking-wider mb-1">STATION 1</h4>
+          <h3 className="font-bold text-base text-zinc-800">풀뿌리 자원봉사회</h3>
+          <p className="text-zinc-500 font-semibold text-xs leading-relaxed mt-2">
             2013년 충남 아산의 아파트 사랑방과 어르신 배식단 결성을 시초로 한 풀뿌리 사랑마중회가 영구적인 우리원의 정체성 모태입니다.
           </p>
         </div>
@@ -289,9 +289,9 @@ export default function History({ fontRatio, highContrast }: HistoryProps) {
         <div className={`p-6 rounded-2xl border text-left ${
           highContrast ? "bg-black border-yellow-400 text-yellow-300" : "bg-white border-slate-150/70"
         }`}>
-          <h4 className="font-extrabold text-xs text-orange-500 uppercase tracking-wider mb-1">STATION 2</h4>
-          <h3 className="font-black text-base text-slate-800">지정기부금 지정 단체</h3>
-          <p className="text-slate-500 font-semibold text-xs leading-relaxed mt-2">
+          <h4 className="font-bold text-xs text-orange-500 uppercase tracking-wider mb-1">STATION 2</h4>
+          <h3 className="font-bold text-base text-zinc-800">지정기부금 지정 단체</h3>
+          <p className="text-zinc-500 font-semibold text-xs leading-relaxed mt-2">
             2020년 충남 제1540호 비영리민간단체로 등록 가결되고 기획재정부 지정 고시 지정 기부금 법인 수임을 거치며 투명 회계 시스템을 튼튼히 완비하였습니다.
           </p>
         </div>
@@ -299,9 +299,9 @@ export default function History({ fontRatio, highContrast }: HistoryProps) {
         <div className={`p-6 rounded-2xl border text-left ${
           highContrast ? "bg-black border-yellow-400 text-yellow-300" : "bg-white border-slate-150/70"
         }`}>
-          <h4 className="font-extrabold text-xs text-emerald-500 uppercase tracking-wider mb-1">STATION 3</h4>
-          <h3 className="font-black text-base text-slate-800">통일부 주관 사단법인</h3>
-          <p className="text-slate-500 font-semibold text-xs leading-relaxed mt-2">
+          <h4 className="font-bold text-xs text-emerald-500 uppercase tracking-wider mb-1">STATION 3</h4>
+          <h3 className="font-bold text-base text-zinc-800">통일부 주관 사단법인</h3>
+          <p className="text-zinc-500 font-semibold text-xs leading-relaxed mt-2">
             2023년 통일부 주관 사단법인 '탈북민공익활동지원연합'을 설립하여 서울과 충남을 넘어 대한민국 전체 정착 복지를 대변하는 유기적 거점으로 자리잡았습니다.
           </p>
         </div>

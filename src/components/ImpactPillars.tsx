@@ -75,24 +75,24 @@ export default function ImpactPillars({ fontRatio, highContrast, setView, active
   };
 
   return (
-    <div className="space-y-12 animate-fade-in text-slate-800" style={{ fontSize: `${16 * fontRatio}px` }}>
+    <div className="space-y-12 animate-fade-in text-zinc-800" style={{ fontSize: `${16 * fontRatio}px` }}>
       
       {/* Structural Header */}
-      <div className="border-b border-slate-100 pb-5 max-w-2xl">
-        <span className="text-xs font-black uppercase text-blue-600 tracking-wider">Strategic Pillars</span>
-        <h1 className="text-3xl font-black text-slate-900 mt-1">우리원의 핵심 사회 공헌 영역</h1>
-        <p className="text-slate-500 font-semibold mt-1">4대 기조 사업의 상세 아키텍처와 현장 실적을 투명하게 수록했습니다.</p>
+      <div className="border-b border-zinc-200/60 pb-5 max-w-2xl">
+        <span className="text-xs font-bold uppercase text-zinc-800 tracking-wider">Strategic Pillars</span>
+        <h1 className="text-lg font-bold text-zinc-900 mt-1">우리원의 핵심 사회 공헌 영역</h1>
+        <p className="text-zinc-500 font-semibold mt-1">4대 기조 사업의 상세 아키텍처와 현장 실적을 투명하게 수록했습니다.</p>
       </div>
 
       {/* Interactive Tabs */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-2 bg-slate-50 p-1.5 rounded-2xl border border-slate-200">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
         <button
           id="impact-tab-heal"
           onClick={() => setActiveTab("heal")}
-          className={`py-4 rounded-xl font-black text-base transition-all flex items-center justify-center gap-2 ${
+          className={`py-4 px-2 rounded-2xl font-bold text-base transition-all duration-200 flex items-center justify-center gap-2 border ${
             activeTab === "heal"
-              ? "bg-white text-blue-700 shadow-md border-b-2 border-blue-600"
-              : "text-slate-600 hover:bg-white/50"
+              ? "bg-white text-blue-700 border-blue-200 shadow-[0_5px_0_0_#3b82f6,0_8px_15px_rgba(59,130,246,0.2)] -translate-y-1"
+              : "bg-white text-zinc-600 border-zinc-200 shadow-[0_5px_0_0_#e4e4e7] hover:-translate-y-0.5 hover:shadow-[0_6px_0_0_#d4d4d8] active:translate-y-[4px] active:shadow-[0_1px_0_0_#e4e4e7]"
           }`}
         >
           <Smile className="w-5 h-5 text-blue-600" />
@@ -101,10 +101,10 @@ export default function ImpactPillars({ fontRatio, highContrast, setView, active
         <button
           id="impact-tab-contribution"
           onClick={() => setActiveTab("contribution")}
-          className={`py-4 rounded-xl font-black text-base transition-all flex items-center justify-center gap-2 ${
+          className={`py-4 px-2 rounded-2xl font-bold text-base transition-all duration-200 flex items-center justify-center gap-2 border ${
             activeTab === "contribution"
-              ? "bg-white text-blue-700 shadow-md border-b-2 border-blue-600"
-              : "text-slate-600 hover:bg-white/50"
+              ? "bg-white text-blue-700 border-blue-200 shadow-[0_5px_0_0_#3b82f6,0_8px_15px_rgba(59,130,246,0.2)] -translate-y-1"
+              : "bg-white text-zinc-600 border-zinc-200 shadow-[0_5px_0_0_#e4e4e7] hover:-translate-y-0.5 hover:shadow-[0_6px_0_0_#d4d4d8] active:translate-y-[4px] active:shadow-[0_1px_0_0_#e4e4e7]"
           }`}
         >
           <Users className="w-5 h-5 text-orange-500" />
@@ -113,10 +113,10 @@ export default function ImpactPillars({ fontRatio, highContrast, setView, active
         <button
           id="impact-tab-art"
           onClick={() => setActiveTab("art")}
-          className={`py-4 rounded-xl font-black text-base transition-all flex items-center justify-center gap-2 ${
+          className={`py-4 px-2 rounded-2xl font-bold text-base transition-all duration-200 flex items-center justify-center gap-2 border ${
             activeTab === "art"
-              ? "bg-white text-blue-700 shadow-md border-b-2 border-blue-600"
-              : "text-slate-600 hover:bg-white/50"
+              ? "bg-white text-blue-700 border-blue-200 shadow-[0_5px_0_0_#3b82f6,0_8px_15px_rgba(59,130,246,0.2)] -translate-y-1"
+              : "bg-white text-zinc-600 border-zinc-200 shadow-[0_5px_0_0_#e4e4e7] hover:-translate-y-0.5 hover:shadow-[0_6px_0_0_#d4d4d8] active:translate-y-[4px] active:shadow-[0_1px_0_0_#e4e4e7]"
           }`}
         >
           <Sparkles className="w-5 h-5 text-purple-500" />
@@ -125,25 +125,25 @@ export default function ImpactPillars({ fontRatio, highContrast, setView, active
       </div>
 
       {/* Main Focus Panel Description */}
-      <div className={`p-8 md:p-10 rounded-3xl border transition-all ${
+      <div className={`p-8 md:p-10 rounded-[1.5rem] border transition-all ${
         highContrast 
           ? "bg-black border-yellow-400 text-yellow-300" 
-          : "bg-white border-slate-150 shadow-sm"
+          : "bg-white border-slate-150 shadow-lg shadow-zinc-200/50"
       }`}>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-star">
           
           <div className="lg:col-span-8 space-y-6">
-            <span className="text-xs font-black bg-blue-100 text-blue-800 px-3 py-1 rounded-full uppercase tracking-wider">
+            <span className="text-xs font-bold bg-blue-100 text-blue-800 px-3 py-1 rounded-full uppercase tracking-wider">
               {pillars[activeTab].subtitle}
             </span>
-            <h2 className="text-2xl md:text-3.5xl font-extrabold tracking-tight">
+            <h2 className="text-lg md:text-lg font-bold tracking-tight">
               {pillars[activeTab].title}
             </h2>
             <p className="text-slate-600 text-base leading-relaxed whitespace-pre-wrap font-medium">
               {pillars[activeTab].description}
             </p>
 
-            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 italic text-blue-900 font-extrabold">
+            <div className="p-4 bg-slate-50 rounded-2xl border border-zinc-200/60 italic text-blue-900 font-bold">
               {pillars[activeTab].quote}
             </div>
 
@@ -151,7 +151,7 @@ export default function ImpactPillars({ fontRatio, highContrast, setView, active
               <button
                 id="impact-cta-btn"
                 onClick={() => setView(activeTab === "art" ? "news" : "support", pillars[activeTab].cta.targetSubView)}
-                className="px-6 py-3.5 bg-slate-900 text-white font-extrabold rounded-xl text-base hover:bg-slate-800 transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer"
+                className="px-6 py-3.5 bg-slate-900 text-white font-bold rounded-xl text-base hover:bg-slate-800 transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer"
               >
                 <span>{pillars[activeTab].cta.text}</span>
                 <ArrowRight className="w-4 h-4 text-white" />
@@ -160,13 +160,13 @@ export default function ImpactPillars({ fontRatio, highContrast, setView, active
           </div>
 
           {/* Right Metrics Grid */}
-          <div className="lg:col-span-4 space-y-4 bg-slate-50/50 p-6 rounded-2.5xl border border-slate-100">
-            <h4 className="text-xs font-bold uppercase tracking-widest text-slate-500">핵심 활동 실적 성과 (Metrics)</h4>
+          <div className="lg:col-span-4 space-y-4 bg-slate-50/50 p-6 rounded-2xl border border-zinc-200/60">
+            <h4 className="text-xs font-bold uppercase tracking-widest text-zinc-500">핵심 활동 실적 성과 (Metrics)</h4>
             <div className="grid grid-cols-1 gap-4">
               {pillars[activeTab].metrics.map((m, mIdx) => (
-                <div key={mIdx} className="bg-white p-4 rounded-xl border border-slate-100 shadow-2xs">
+                <div key={mIdx} className="bg-white p-4 rounded-xl border border-zinc-200/60 shadow-2xs">
                   <span className="text-slate-400 text-xxs block font-bold">{m.label}</span>
-                  <span className="text-xl font-black text-blue-600 block mt-1">{m.value}</span>
+                  <span className="text-xl font-bold text-zinc-800 block mt-1">{m.value}</span>
                 </div>
               ))}
             </div>
@@ -176,10 +176,10 @@ export default function ImpactPillars({ fontRatio, highContrast, setView, active
       </div>
 
       {/* Additional info block - Unification Academic hub explaining Yang moon-su and National Unification training goals */}
-      <section className="bg-slate-900 text-white rounded-3xl p-8 md:p-10 space-y-6">
+      <section className="bg-slate-900 text-white rounded-[1.5rem] p-8 md:p-10 space-y-6">
         <div className="max-w-3xl space-y-3">
-          <span className="text-xs bg-orange-600 text-white font-extrabold px-3 py-1 rounded-full uppercase">Academic Research Focus</span>
-          <h2 className="text-2xl md:text-3xl font-black">4. 남북통합 교육 및 지식 학술 아카이빙</h2>
+          <span className="text-xs bg-orange-600 text-white font-bold px-3 py-1 rounded-full uppercase">Academic Research Focus</span>
+          <h2 className="text-xl md:text-lg font-bold">4. 남북통합 교육 및 지식 학술 아카이빙</h2>
           <p className="text-slate-300 text-sm leading-relaxed">
             우리원은 단순 구제를 넘어, 대국문 평화 담론의 지방 싱크탱크 역할을 주무하고 있습니다. 
             우리원 자료실에는 통일부 통일교육연구원 발간자료 및 북한 시장 경제의 미시 구조와 신흥 무역 와크 담론을 해석해낸 
@@ -190,7 +190,7 @@ export default function ImpactPillars({ fontRatio, highContrast, setView, active
           <button
             id="impact-academic-archive-btn"
             onClick={() => setView("news", "library")}
-            className="px-5 py-3 bg-white text-slate-900 font-extrabold rounded-xl text-base hover:bg-slate-50 transition-all flex items-center gap-1 cursor-pointer"
+            className="px-5 py-3 bg-white text-zinc-900 font-bold rounded-xl text-base hover:bg-slate-50 transition-all flex items-center gap-1 cursor-pointer"
           >
             <span>📚 학술자료실 다운로드관 바로가기</span>
             <ChevronRight className="w-4 h-4" />

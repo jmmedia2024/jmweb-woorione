@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   Heart, 
   Accessibility, 
@@ -32,6 +32,26 @@ export default function Navigation({
 }: NavigationProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [hoveredMenu, setHoveredMenu] = useState<string | null>(null);
+  const [branding, setBranding] = useState({
+    orgName: "우 리 원",
+    slogan: "N·S WOORI_ONE CO-EXISTENCE",
+    logoUrl: "input_file_0.png"
+  });
+
+  useEffect(() => {
+    async function loadBranding() {
+      try {
+        const response = await fetch("/api/branding");
+        if (response.ok) {
+          const data = await response.json();
+          setBranding(data);
+        }
+      } catch (err) {
+        console.error("Error loading branding in Navigation:", err);
+      }
+    }
+    loadBranding();
+  }, []);
 
   // GNB Structure
   const menuItems = [
@@ -72,16 +92,6 @@ export default function Navigation({
         { name: "자유게시판 (Q&A)", subId: "qna" },
       ],
     },
-    {
-      id: "drive",
-      label: "구글 드라이브 자료실",
-      items: [
-        { name: "드라이브 통합 탐색", subId: "explorer" },
-        { name: "최근 업로드 자료", subId: "recent" },
-        { name: "팬덤 자료 백업소", subId: "backup" },
-        { name: "드라이브 연동 설정", subId: "settings" },
-      ],
-    },
   ];
 
   const handleMenuClick = (menuId: string, subId?: string) => {
@@ -90,10 +100,10 @@ export default function Navigation({
   };
 
   return (
-    <header className={`sticky top-0 z-50 border-b transition-all duration-300 ${
+    <header className={`sticky top-0 z-50 border-b transition-all duration-500 ease-in-out ${
       highContrast 
         ? "bg-black border-yellow-400 text-yellow-300 shadow-none" 
-        : "bg-white/80 backdrop-blur-xl border-slate-100/75 text-slate-800 shadow-[0_4px_30px_rgba(0,0,0,0.015)]"
+        : "bg-white border-white/40 text-zinc-800 shadow-lg shadow-zinc-200/50"
     }`}>
       {/* Main GNB Bar */}
       <div className="max-w-7xl mx-auto px-4 h-22 flex items-center justify-between">
@@ -101,22 +111,27 @@ export default function Navigation({
         <button 
           id="logo-brand-btn"
           onClick={() => handleMenuClick("home")} 
-          className="flex items-center gap-3 group text-left focus:outline-none"
+          className="flex items-center gap-4 group text-left focus:outline-none"
         >
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-black text-xl shadow-[0_4px_12px_rgba(37,99,235,0.2)] group-hover:scale-105 transition-transform duration-300">
-            N.S
+          <div className="w-14 h-14 rounded-xl bg-white flex items-center justify-center shadow-md group-hover:scale-105 transition-transform duration-300 overflow-hidden p-1">
+            <img 
+              src={branding.logoUrl} 
+              alt="우리원 로고" 
+              className="w-full h-full object-contain"
+              referrerPolicy="no-referrer"
+            />
           </div>
-          <div>
+          <div className="flex flex-col">
             <div className="flex items-center gap-2 leading-none">
-              <span className={`text-2xl font-black tracking-tight ${highContrast ? "text-yellow-300" : "text-slate-900 bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent"}`}>
-                우 리 원
+              <span className={`text-lg font-bold tracking-tight ${highContrast ? "text-yellow-300" : "text-zinc-900 bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent"}`}>
+                {branding.orgName}
               </span>
-              <span className="text-[10px] bg-orange-500 text-white px-2 py-0.5 rounded-full font-extrabold tracking-wider shadow-sm select-none">
+              <span className="text-[10px] bg-zinc-800 text-white px-2 py-0.5 rounded-full font-bold tracking-wider shadow-lg shadow-zinc-200/50 select-none">
                 충남거점
               </span>
             </div>
-            <p className={`text-[9px] tracking-widest mt-1 font-extrabold ${highContrast ? "text-yellow-400/90" : "text-slate-400"}`}>
-              N·S WOORI_ONE CO-EXISTENCE
+            <p className={`text-[9px] tracking-[0.2em] mt-1 font-bold uppercase ${highContrast ? "text-yellow-400/90" : "text-slate-400"}`}>
+              {branding.slogan}
             </p>
           </div>
         </button>
@@ -134,25 +149,25 @@ export default function Navigation({
               <button 
                 id={`nav-main-btn-${menu.id}`}
                 onClick={() => handleMenuClick(menu.id)}
-                className={`px-4 py-2.5 rounded-xl flex items-center gap-1 font-extrabold tracking-tight text-sm xl:text-base transition-all focus:outline-none select-none relative group ${
+                className={`px-4 py-2.5 rounded-xl flex items-center gap-1 font-bold tracking-tight text-sm xl:text-base transition-all focus:outline-none select-none relative group ${
                   currentView === menu.id
-                    ? (highContrast ? "text-yellow-300 border-b-2 border-yellow-300" : "text-blue-600 bg-blue-50/40")
-                    : (highContrast ? "text-yellow-400/80 hover:text-yellow-300" : "text-slate-700 hover:text-blue-600 hover:bg-slate-50/50")
+                    ? (highContrast ? "text-yellow-300 border-b-2 border-yellow-300" : "text-zinc-800 bg-zinc-100/40")
+                    : (highContrast ? "text-yellow-400/80 hover:text-yellow-300" : "text-slate-700 hover:text-zinc-800 hover:bg-slate-50/50")
                 }`}
               >
                 <span>{menu.label}</span>
-                <ChevronDown className={`w-3.5 h-3.5 opacity-60 transition-transform duration-300 ${hoveredMenu === menu.id ? "rotate-180 text-blue-600" : ""}`} />
+                <ChevronDown className={`w-3.5 h-3.5 opacity-60 transition-transform duration-300 ${hoveredMenu === menu.id ? "rotate-180 text-zinc-800" : ""}`} />
                 {currentView === menu.id && !highContrast && (
-                  <span className="absolute bottom-1 left-4 right-4 h-0.5 bg-blue-600 rounded-full" />
+                  <span className="absolute bottom-1 left-4 right-4 h-0.5 bg-zinc-800 rounded-full" />
                 )}
               </button>
 
               {/* Advanced Dropdown */}
               {hoveredMenu === menu.id && (
-                <div className={`absolute top-full left-1/2 -translate-x-1/2 w-60 rounded-2xl border p-2 shadow-2xl animate-fade-in z-50 ${
+                <div className={`absolute top-full left-1/2 -translate-x-1/2 w-64 rounded-[1.5rem] border p-2.5 shadow-2xl animate-fade-in z-50 transition-all duration-300 ${
                   highContrast 
                     ? "bg-black border-yellow-500 text-yellow-300" 
-                    : "bg-white/95 backdrop-blur-xl border-slate-100 text-slate-800 shadow-[0_20px_50px_rgba(0,0,0,0.06)]"
+                    : "bg-white border-white/50 text-zinc-800 shadow-lg shadow-zinc-200/50"
                 }`}>
                   {menu.items.map((sub, sIdx) => {
                     const isSelected = activeSubView(currentView, menu.id, sub.subId, currentSubView);
@@ -161,10 +176,10 @@ export default function Navigation({
                         id={`nav-sub-btn-${menu.id}-${sub.subId}`}
                         key={sIdx}
                         onClick={() => handleMenuClick(menu.id, sub.subId)}
-                        className={`w-full text-left px-4 py-3 rounded-xl text-xs xl:text-sm font-extrabold transition-all duration-200 focus:outline-none ${
+                        className={`w-full text-left px-5 py-3.5 rounded-2xl text-xs xl:text-sm font-semibold tracking-tight transition-all duration-300 focus:outline-none ${
                           isSelected
-                            ? (highContrast ? "bg-yellow-400 text-black font-extrabold" : "bg-gradient-to-r from-blue-50 to-indigo-50/50 text-blue-700 font-black")
-                            : (highContrast ? "hover:bg-neutral-900 text-yellow-400" : "hover:bg-slate-50/70 text-slate-600 hover:text-slate-900")
+                            ? (highContrast ? "bg-yellow-400 text-black font-bold" : "bg-indigo-50/80 text-indigo-700 font-bold")
+                            : (highContrast ? "hover:bg-neutral-900 text-yellow-400" : "hover:bg-slate-50/80 text-zinc-500 hover:text-zinc-900")
                         }`}
                       >
                         {sub.name}
@@ -182,7 +197,7 @@ export default function Navigation({
           <button 
             id="gnb-donate-shortcut-btn"
             onClick={() => handleMenuClick("support", "fund")}
-            className={`px-5 py-2.5 rounded-full font-black text-sm flex items-center gap-2 transition-all shadow-md focus:outline-none hover:shadow-lg hover:scale-[1.02] active:scale-95 ${
+            className={`px-5 py-2.5 rounded-full font-bold text-sm flex items-center gap-2 transition-all shadow-md focus:outline-none hover:shadow-lg hover:scale-[1.02] active:scale-95 ${
               highContrast 
                 ? "bg-yellow-300 text-black border-2 border-yellow-300 hover:bg-yellow-400" 
                 : "bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:from-orange-600 hover:to-orange-700"
@@ -201,7 +216,7 @@ export default function Navigation({
             className={`p-2.5 rounded-lg border transition-colors focus:outline-none ${
               highContrast 
                 ? "border-yellow-400 text-yellow-300 bg-neutral-900" 
-                : "border-slate-200 text-slate-700 bg-slate-50"
+                : "border-zinc-200 text-slate-700 bg-slate-50"
             }`}
           >
             {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -212,13 +227,13 @@ export default function Navigation({
       {/* Tactile Mobile Overlaid Navigation */}
       {mobileOpen && (
         <div className={`fixed inset-y-0 right-0 left-0 top-20 z-40 p-6 flex flex-col justify-between overflow-y-auto ${
-          highContrast ? "bg-black text-yellow-300" : "bg-white text-slate-900"
+          highContrast ? "bg-black text-yellow-300" : "bg-white text-zinc-900"
         }`}>
           <div className="space-y-6">
             {menuItems.map((menu) => (
-              <div id={`mobile-menu-sec-${menu.id}`} key={menu.id} className="border-b pb-4 border-slate-200">
+              <div id={`mobile-menu-sec-${menu.id}`} key={menu.id} className="border-b pb-4 border-zinc-200">
                 <p 
-                  className={`text-sm font-black tracking-wider uppercase mb-2 ${
+                  className={`text-sm font-bold tracking-wider uppercase mb-2 ${
                     highContrast ? "text-yellow-400" : "text-slate-400"
                   }`}
                 >
@@ -230,7 +245,7 @@ export default function Navigation({
                       id={`mobile-sub-btn-${menu.id}-${sub.subId}`}
                       key={sIdx}
                       onClick={() => handleMenuClick(menu.id, sub.subId)}
-                      className={`text-left px-4 py-3 rounded-xl text-sm font-extrabold transition-all ${
+                      className={`text-left px-4 py-3 rounded-xl text-sm font-bold transition-all ${
                         currentView === menu.id
                           ? "bg-slate-100 dark:bg-neutral-800 text-slate-950"
                           : "text-slate-600 hover:bg-slate-50"
@@ -248,7 +263,7 @@ export default function Navigation({
             <button 
               id="mobile-nav-donate-btn"
               onClick={() => handleMenuClick("support", "fund")}
-              className="w-full py-4 rounded-xl bg-orange-500 text-white font-extrabold text-lg shadow-md flex items-center justify-center gap-2"
+              className="w-full py-4 rounded-xl bg-orange-500 text-white font-bold text-lg shadow-md flex items-center justify-center gap-2"
             >
               <Heart className="w-5 h-5 fill-current" />
               <span>디지털 후원하기 바로가기</span>

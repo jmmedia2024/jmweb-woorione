@@ -13,8 +13,8 @@ export default function Organization({ fontRatio, highContrast }: OrgProps) {
       subtitle: "Heart & Soul Healing",
       role: "멘토링 매칭 & 1:1 심리 상담 지원",
       description: "고향을 떠나온 탈북 선후배 매칭을 지원하며, 무연고 가구에 은빛 정서 상담 및 주거용 통일마중쉼터를 전액 무료로 보급하고 정서 자립을 돕습니다.",
-      icon: <Heart className="w-5 h-5 text-blue-600" />,
-      color: "border-blue-100 bg-blue-50/15"
+      icon: <Heart className="w-5 h-5 text-zinc-800" />,
+      color: "border-blue-100 bg-zinc-100/15"
     },
     {
       title: "통일 예술 문화 연합회",
@@ -47,24 +47,24 @@ export default function Organization({ fontRatio, highContrast }: OrgProps) {
       
       {/* Page Title */}
       <div className="space-y-3 text-left">
-        <span className={`text-xs font-black px-3.5 py-1.5 rounded-full uppercase tracking-widest ${
-          highContrast ? "bg-black border border-yellow-400 text-yellow-300" : "bg-blue-50 text-blue-700"
+        <span className={`text-xs font-bold px-3.5 py-1.5 rounded-full uppercase tracking-widest ${
+          highContrast ? "bg-black border border-yellow-400 text-yellow-300" : "bg-zinc-100 text-blue-700"
         }`}>
           ★ 우리원 소개
         </span>
-        <h1 className={`text-3xl md:text-4xl font-black tracking-tight ${highContrast ? "text-yellow-300" : "text-slate-900"}`}>
+        <h1 className={`text-lg md:text-xl font-bold tracking-tight ${highContrast ? "text-yellow-300" : "text-zinc-900"}`}>
           조직도 및 경영 체계 (Organization)
         </h1>
-        <p className={`text-sm ${highContrast ? "text-yellow-400/90" : "text-slate-500 font-semibold"}`}>
+        <p className={`text-sm ${highContrast ? "text-yellow-400/90" : "text-zinc-500 font-semibold"}`}>
           사단법인 탈북민공익활동지원연합과의 연계를 통해 체계적이고 청렴하게 운영되는 우리원 조직 체계를 안내합니다.
         </p>
       </div>
 
       {/* Hierarchical Structure Diagram */}
-      <div className={`p-8 md:p-12 rounded-3xl border transition-all ${
+      <div className={`p-8 md:p-12 rounded-[1.5rem] border transition-all ${
         highContrast 
           ? "bg-black border-yellow-400 text-yellow-300" 
-          : "bg-white/80 border-slate-100/90 shadow-[0_20px_50px_rgba(37,99,235,0.015)] backdrop-blur-md"
+          : "bg-white/80 border-zinc-200/60/90 shadow-lg shadow-zinc-200/50 backdrop-blur-md"
       }`}>
         
         {/* Core Hierarchy Node Diagram */}
@@ -78,7 +78,7 @@ export default function Organization({ fontRatio, highContrast }: OrgProps) {
                 : "bg-slate-900 text-white shadow-md"
             }`}>
               <Users className="w-5 h-5 mx-auto mb-2 text-blue-400 animate-pulse" />
-              <h3 className="font-extrabold text-sm tracking-wide">의결총회 / 이사회</h3>
+              <h3 className="font-bold text-sm tracking-wide">의결총회 / 이사회</h3>
               <p className="text-[10px] text-slate-400 mt-1 font-bold">최고 의지결정 조직체</p>
             </div>
             {/* Downward connecting line */}
@@ -93,14 +93,14 @@ export default function Organization({ fontRatio, highContrast }: OrgProps) {
                 : "bg-gradient-to-tr from-blue-700 to-indigo-700 text-white shadow-xl shadow-blue-900/5 border-blue-600"
             }`}>
               <Award className="w-6 h-6 mx-auto mb-2.5 text-orange-400" />
-              <p className="text-[10px] font-extrabold text-blue-200 tracking-wider uppercase">대표이사 이사장</p>
-              <h2 className="font-black text-xl mt-0.5">채 신 아 대표</h2>
+              <p className="text-[10px] font-bold text-blue-200 tracking-wider uppercase">대표이사 이사장</p>
+              <h2 className="font-bold text-xl mt-0.5">채 신 아 대표</h2>
               <p className="text-xxs text-white/80 mt-1.5 font-semibold">비영리민간단체 우리원 수석 수임 / 사단법인 탈북민공익활동지원연합 회장</p>
             </div>
             
             {/* Advisory link to the side */}
             <div className="absolute top-1/2 -right-12 lg:-right-24 h-0.5 w-12 lg:w-24 bg-dashed bg-slate-300 hidden md:block" />
-            <div className="absolute top-1/2 -right-12 lg:-right-24 translate-y-[-50%] p-3 rounded-xl border border-slate-200 bg-slate-50 text-xxs font-extrabold text-slate-600 text-left w-24 lg:w-36 hidden md:block">
+            <div className="absolute top-1/2 -right-12 lg:-right-24 translate-y-[-50%] p-3 rounded-xl border border-zinc-200 bg-slate-50 text-xxs font-bold text-slate-600 text-left w-24 lg:w-36 hidden md:block">
               ⚖️ 감사 및 자문단<br />
               <span className="text-[9px] font-medium text-slate-400 mt-0.5 block">회계 복식부기 감사 처분 성실 위원회</span>
             </div>
@@ -114,12 +114,12 @@ export default function Organization({ fontRatio, highContrast }: OrgProps) {
             <div className={`p-5 rounded-2xl border ${
               highContrast 
                 ? "bg-black border-yellow-400" 
-                : "bg-sky-50 border-sky-100 text-sky-950 shadow-sm"
+                : "bg-sky-50 border-sky-100 text-sky-950 shadow-lg shadow-zinc-200/50"
             }`}>
-              <Shield className="w-5 h-5 mx-auto mb-2 text-blue-600" />
-              <p className="text-[10px] font-black tracking-widest text-blue-600">실무 총괄 행정처</p>
-              <h3 className="font-black text-base mt-0.5">이 은 택 사무총장</h3>
-              <p className="text-xxs text-slate-500 font-bold mt-1">우리원 사업 기획, 법인 예산 결산 및 투명 감사 실무 총 지휘</p>
+              <Shield className="w-5 h-5 mx-auto mb-2 text-zinc-800" />
+              <p className="text-[10px] font-bold tracking-widest text-zinc-800">실무 총괄 행정처</p>
+              <h3 className="font-bold text-base mt-0.5">이 은 택 사무총장</h3>
+              <p className="text-xxs text-zinc-500 font-bold mt-1">우리원 사업 기획, 법인 예산 결산 및 투명 감사 실무 총 지휘</p>
             </div>
             
             {/* Triple downward connecting line using absolute heights or simple border block */}
@@ -129,10 +129,10 @@ export default function Organization({ fontRatio, highContrast }: OrgProps) {
         </div>
 
         {/* Level 4: Grid of departments representing the horizontal span */}
-        <div className="mt-8 border-t border-dashed border-slate-200 pt-10">
+        <div className="mt-8 border-t border-dashed border-zinc-200 pt-10">
           <div className="text-center mb-8">
-            <span className="text-xxs font-black text-slate-400 tracking-widest uppercase">Secretariat Operational Wings</span>
-            <h3 className="text-lg font-black text-slate-800 mt-1">사무처 산하 4개 부서 실무 조직</h3>
+            <span className="text-xxs font-bold text-slate-400 tracking-widest uppercase">Secretariat Operational Wings</span>
+            <h3 className="text-lg font-bold text-zinc-800 mt-1">사무처 산하 4개 부서 실무 조직</h3>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -140,7 +140,7 @@ export default function Organization({ fontRatio, highContrast }: OrgProps) {
               <div 
                 id={`org-dept-card-${dIdx}`}
                 key={dIdx}
-                className={`p-6 rounded-2xl border flex flex-col justify-between hover:scale-[1.03] hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(37,99,235,0.06)] transition-all duration-350 ease-out cursor-pointer ${
+                className={`p-6 rounded-2xl border flex flex-col justify-between hover:scale-[1.03] hover:-translate-y-1 hover:shadow-lg shadow-zinc-200/50 transition-all duration-350 ease-out cursor-pointer ${
                   highContrast 
                     ? "bg-black border-yellow-400 text-yellow-300" 
                     : `bg-white ${dept.color} hover:border-blue-200`
@@ -148,17 +148,17 @@ export default function Organization({ fontRatio, highContrast }: OrgProps) {
               >
                 <div className="space-y-4">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-10 h-10 rounded-xl bg-white shadow-xs border border-slate-100 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-xl bg-white shadow-xs border border-zinc-200/60 flex items-center justify-center">
                       {dept.icon}
                     </div>
                     <div>
-                      <h4 className="font-extrabold text-sm text-slate-900 leading-tight">{dept.title}</h4>
+                      <h4 className="font-bold text-sm text-zinc-900 leading-tight">{dept.title}</h4>
                       <p className="text-[9px] text-slate-400 uppercase tracking-widest mt-0.5">{dept.subtitle}</p>
                     </div>
                   </div>
 
                   <div className="space-y-1.5 text-left">
-                    <p className="text-[10px] bg-white font-extrabold text-blue-600 px-2 py-0.5 border rounded-md inline-block">
+                    <p className="text-[10px] bg-white font-bold text-zinc-800 px-2 py-0.5 border rounded-md inline-block">
                       {dept.role}
                     </p>
                     <p className="text-slate-600 text-xs leading-relaxed font-semibold">
@@ -167,7 +167,7 @@ export default function Organization({ fontRatio, highContrast }: OrgProps) {
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-dashed border-slate-100/60 mt-4 text-left text-[10px] text-slate-450 font-black">
+                <div className="pt-4 border-t border-dashed border-zinc-200/60 mt-4 text-left text-[10px] text-slate-450 font-bold">
                   🛡️ 신뢰와 정량 책임 준수
                 </div>
               </div>
@@ -179,12 +179,12 @@ export default function Organization({ fontRatio, highContrast }: OrgProps) {
 
       {/* Bottom Info Quote Card */}
       <div className={`p-6 md:p-8 rounded-2xl border text-center space-y-2 ${
-        highContrast ? "bg-black border-yellow-400 text-yellow-300" : "bg-slate-50 border-slate-100"
+        highContrast ? "bg-black border-yellow-400 text-yellow-300" : "bg-slate-50 border-zinc-200/60"
       }`}>
-        <p className="font-extrabold text-sm text-slate-800">
+        <p className="font-bold text-sm text-zinc-800">
           “수혜자 고착을 극복하는 사명, 우리원이 앞장서 실천합니다.”
         </p>
-        <p className="text-slate-500 font-semibold text-xs leading-relaxed">
+        <p className="text-zinc-500 font-semibold text-xs leading-relaxed">
           우리원의 대의결총회 및 모든 산하 부서는 기획재정부 세법에 입각한 복식 감사를 분기별 수렴하고 있으며,<br className="hidden md:block" />
           실시간 1원단위 후원 결산 공개를 원칙으로 하여 사회적 무한 신뢰를 이룩해냅니다.
         </p>

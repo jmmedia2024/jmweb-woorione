@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
-// Components
 import Navigation from "./components/Navigation";
 import DashboardHome from "./components/DashboardHome";
 import ImpactPillars from "./components/ImpactPillars";
@@ -24,13 +23,13 @@ import DigitalFundraising from "./components/DigitalFundraising";
 import AcademicLibrary from "./components/AcademicLibrary";
 import CommunityBoard from "./components/CommunityBoard";
 import SiteGallery from "./components/SiteGallery";
-import GoogleDriveManager from "./components/GoogleDriveManager";
 
 // Pages in page/ folder
 import Greetings from "./page/Greetings";
 import Organization from "./page/Organization";
 import History from "./page/History";
 import Directions from "./page/Directions";
+import AdminDashboard from "./page/AdminDashboard";
 
 // 5 Key Activity Unsplash Slides for the primary carousel
 const primarySlides = [
@@ -74,12 +73,32 @@ const primarySlides = [
 export default function App() {
   const [view, setView] = useState<string>("home");
   const [subView, setSubView] = useState<string>("");
-  const [fontRatio, setFontRatio] = useState<number>(1.0);
+  const [fontRatio, setFontRatio] = useState<number>(0.85);
   const [highContrast, setHighContrast] = useState<boolean>(false);
 
   // Main Home Hero Carousel state in App.tsx
   const [activeSlide, setActiveSlide] = useState<number>(0);
   const [sliderAutoplay, setSliderAutoplay] = useState<boolean>(true);
+  const [branding, setBranding] = useState({
+    orgName: "비영리민간단체 우리원",
+    slogan: "N·S WOORI_ONE UNION",
+    logoUrl: "input_file_0.png"
+  });
+
+  useEffect(() => {
+    async function loadBranding() {
+      try {
+        const response = await fetch("/api/branding");
+        if (response.ok) {
+          const data = await response.json();
+          setBranding(data);
+        }
+      } catch (err) {
+        console.error("Error loading branding in App:", err);
+      }
+    }
+    loadBranding();
+  }, []);
 
   useEffect(() => {
     if (!sliderAutoplay || view !== "home") return;
@@ -182,10 +201,10 @@ export default function App() {
   const currentSidebarCards = getSidebarCards();
 
   return (
-    <div className={`min-h-screen flex flex-col transition-colors duration-200 ${
+    <div className={`min-h-screen flex flex-col font-sans tracking-tight transition-colors duration-500 ease-in-out ${
       highContrast 
         ? "bg-black text-yellow-300" 
-        : "bg-[#FFFFFF] text-slate-800"
+        : "bg-[#FAFAFA] text-zinc-900 selection:bg-indigo-100 selection:text-indigo-900"
     }`}>
       
       {/* Universal GNB accessibility header */}
@@ -229,7 +248,7 @@ export default function App() {
                       initial={{ opacity: 0, y: 15 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.15, duration: 0.4 }}
-                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] md:text-xs font-black bg-orange-500 text-white tracking-widest uppercase mb-3"
+                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] md:text-xs font-bold bg-orange-500 text-white tracking-widest uppercase mb-3"
                     >
                       <Sparkles className="w-3 h-3 text-white animate-pulse" />
                       {primarySlides[activeSlide].badge}
@@ -239,8 +258,8 @@ export default function App() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.25, duration: 0.45 }}
-                      style={{ fontSize: `${24 * fontRatio}px` }}
-                      className="font-black text-lg md:text-2xl lg:text-3.5xl text-white tracking-tight leading-tight max-w-3xl"
+                      style={{ fontSize: `${20 * fontRatio}px` }}
+                      className="font-bold text-lg md:text-xl lg:text-lg text-white tracking-tight leading-tight max-w-3xl"
                     >
                       {primarySlides[activeSlide].title}
                     </motion.h2>
@@ -249,8 +268,8 @@ export default function App() {
                       initial={{ opacity: 0, y: 25 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.35, duration: 0.5 }}
-                      style={{ fontSize: `${14 * fontRatio}px` }}
-                      className="text-xs md:text-sm lg:text-base text-slate-300 font-semibold mt-2.5 leading-relaxed max-w-2xl line-clamp-2 md:line-clamp-none"
+                      style={{ fontSize: `${12 * fontRatio}px` }}
+                      className="text-xs md:text-sm text-slate-300 font-semibold mt-2.5 leading-relaxed max-w-2xl line-clamp-2 md:line-clamp-none"
                     >
                       {primarySlides[activeSlide].description}
                     </motion.p>
@@ -317,144 +336,79 @@ export default function App() {
 
       {/* Main visual portal body container: Flexible layout depending on Screen width or column needs */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-8 md:py-12">
-        <div style={{ fontSize: `${16 * fontRatio}px` }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 items-start flex-wrap">
-          
-          {/* Main Content Area (Spans full width on mobile/tablet, 2 columns on desktop) */}
-          <div className="col-span-1 md:col-span-2 lg:col-span-2 space-y-8 flex-wrap">
-            
-            {/* Active View Dispatcher */}
-            {view === "home" && (
-              <DashboardHome 
-                fontRatio={fontRatio} 
-                highContrast={highContrast} 
-                setView={handleSetView} 
-              />
-            )}
-
-            {view === "about" && (
-              <div className="space-y-12 animate-fade-in">
-                {subView === "organization" ? (
-                  <Organization fontRatio={fontRatio} highContrast={highContrast} />
-                ) : subView === "timeline" ? (
-                  <History fontRatio={fontRatio} highContrast={highContrast} />
-                ) : subView === "directions" ? (
-                  <Directions fontRatio={fontRatio} highContrast={highContrast} />
-                ) : (
-                  <Greetings fontRatio={fontRatio} highContrast={highContrast} />
-                )}
-              </div>
-            )}
-
-            {view === "impact" && (
-              <ImpactPillars 
-                fontRatio={fontRatio} 
-                highContrast={highContrast} 
-                setView={handleSetView} 
-                activeSubSection={subView}
-              />
-            )}
-
-            {view === "news" && (
-              subView === "library" ? (
-                <AcademicLibrary fontRatio={fontRatio} highContrast={highContrast} />
-              ) : subView === "feed" ? (
-                <SiteGallery fontRatio={fontRatio} highContrast={highContrast} />
-              ) : (
-                <CommunityBoard 
-                  fontRatio={fontRatio} 
-                  highContrast={highContrast} 
-                  activeSubSection={subView} 
-                />
-              )
-            )}
-
-            {view === "support" && (
-              subView === "fund" ? (
-                <DigitalFundraising fontRatio={fontRatio} highContrast={highContrast} />
-              ) : subView === "volunteer" ? (
-                <CounselingShelter fontRatio={fontRatio} highContrast={highContrast} />
-              ) : (
-                <CommunityBoard 
-                  fontRatio={fontRatio} 
-                  highContrast={highContrast} 
-                  activeSubSection="qna" 
-                />
-              )
-            )}
-
-            {view === "drive" && (
-              <GoogleDriveManager 
-                highContrast={highContrast} 
-                activeSubSection={subView} 
-              />
-            )}
-
+        {view === "admin" ? (
+          <div className="animate-fade-in">
+            <AdminDashboard highContrast={highContrast} />
           </div>
+        ) : (
+          <div style={{ fontSize: `${16 * fontRatio}px` }} className="w-full">
+            
+            {/* Main Content Area (Spans full width) */}
+            <div className="w-full space-y-8 flex-wrap">
+              
+              {/* Active View Dispatcher */}
+              {view === "home" && (
+                <DashboardHome 
+                  fontRatio={fontRatio} 
+                  highContrast={highContrast} 
+                  setView={handleSetView} 
+                />
+              )}
 
-          {/* Sidebar Area: Forms 3rd column on desktop. Includes visually stunning image cards */}
-          <aside className="col-span-1 md:col-span-2 lg:col-span-1 space-y-6 flex-wrap">
-            <div className={`p-6 rounded-3xl border transition-all ${
-              highContrast 
-                ? "bg-black border-yellow-400 text-yellow-300" 
-                : "bg-radial-[at_50%_0%] from-slate-50 to-white/70 backdrop-blur-md border-slate-100 shadow-sm"
-            }`}>
-              {/* Header */}
-              <div className="flex items-center gap-2 border-b border-dashed border-slate-100 pb-4 mb-5">
-                <Sparkles className="w-5 h-5 text-blue-600 animate-pulse" />
-                <div>
-                  <h3 className="font-extrabold text-sm text-slate-900 leading-tight">우리원 공익 스냅샷</h3>
-                  <p className="text-[10px] text-slate-400 font-bold mt-0.5">실천하는 손끝의 이야기</p>
+              {view === "about" && (
+                <div className="space-y-12 animate-fade-in">
+                  {subView === "organization" ? (
+                    <Organization fontRatio={fontRatio} highContrast={highContrast} />
+                  ) : subView === "timeline" ? (
+                    <History fontRatio={fontRatio} highContrast={highContrast} />
+                  ) : subView === "directions" ? (
+                    <Directions fontRatio={fontRatio} highContrast={highContrast} />
+                  ) : (
+                    <Greetings fontRatio={fontRatio} highContrast={highContrast} />
+                  )}
                 </div>
-              </div>
+              )}
 
-              {/* Stack of Companion Cards: Responsive 1-3 col layout */}
-              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-1 gap-6 flex-wrap">
-                {currentSidebarCards.map((card, idx) => (
-                  <div 
-                    key={idx}
-                    className="group relative rounded-2xl overflow-hidden border border-slate-100/80 bg-white shadow-2xs hover:shadow-[0_20px_40px_rgba(0,0,0,0.07)] hover:border-slate-200/90 hover:scale-[1.03] hover:-translate-y-1 transition-all duration-300 ease-out cursor-pointer"
-                  >
-                    {/* Card Image Area */}
-                    <div className="relative aspect-[16/10] bg-slate-50 overflow-hidden">
-                      <img 
-                        src={card.imageUrl} 
-                        alt={card.title} 
-                        className="w-full h-full object-cover grayscale opacity-90 transition-all duration-500 group-hover:scale-105 group-hover:grayscale-0 group-hover:opacity-100"
-                        referrerPolicy="no-referrer"
-                      />
-                      {/* Floating Badge Tag */}
-                      <span className="absolute top-3 left-3 px-2.5 py-0.5 bg-slate-900/90 text-white font-extrabold text-[9px] tracking-wider rounded-md uppercase">
-                        {card.badge}
-                      </span>
-                    </div>
+              {view === "impact" && (
+                <ImpactPillars 
+                  fontRatio={fontRatio} 
+                  highContrast={highContrast} 
+                  setView={handleSetView} 
+                  activeSubSection={subView}
+                />
+              )}
 
-                    {/* Card Text Content */}
-                    <div className="p-4">
-                      <h4 className="font-black text-sm text-slate-900 group-hover:text-blue-600 transition-colors">
-                        {card.title}
-                      </h4>
-                      <p className="text-slate-500 text-xs mt-1.5 leading-relaxed font-semibold">
-                        {card.description}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              {view === "news" && (
+                subView === "library" ? (
+                  <AcademicLibrary fontRatio={fontRatio} highContrast={highContrast} />
+                ) : subView === "feed" ? (
+                  <SiteGallery fontRatio={fontRatio} highContrast={highContrast} />
+                ) : (
+                  <CommunityBoard 
+                    fontRatio={fontRatio} 
+                    highContrast={highContrast} 
+                    activeSubSection={subView} 
+                  />
+                )
+              )}
 
-              {/* Micro call out info badge */}
-              <div className="mt-6 pt-5 border-t border-slate-100/50 text-center">
-                <span className="text-[10px] bg-blue-50 text-blue-800 font-black px-3 py-1 rounded-full uppercase tracking-tight">
-                  🤝 100% 투명한 공정 수수료
-                </span>
-                <p className="text-[9px] text-slate-400 font-bold mt-2 leading-normal">
-                  비영리민간단체 우리원은 가치 실효에 최선을 다해 정직하게 공여를 행수합니다.
-                </p>
-              </div>
+              {view === "support" && (
+                subView === "fund" ? (
+                  <DigitalFundraising fontRatio={fontRatio} highContrast={highContrast} />
+                ) : subView === "volunteer" ? (
+                  <CounselingShelter fontRatio={fontRatio} highContrast={highContrast} />
+                ) : (
+                  <CommunityBoard 
+                    fontRatio={fontRatio} 
+                    highContrast={highContrast} 
+                    activeSubSection="qna" 
+                  />
+                )
+              )}
 
             </div>
-          </aside>
-
-        </div>
+          </div>
+        )}
       </main>
 
 
@@ -470,14 +424,14 @@ export default function App() {
           {/* Logo brand */}
           <div className="md:col-span-4 space-y-3">
             <div className="flex items-center gap-2 text-left">
-              <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center text-white font-black text-base shadow-sm">
+              <div className="w-9 h-9 rounded-lg bg-zinc-800 flex items-center justify-center text-white font-bold text-base shadow-lg shadow-zinc-200/50">
                 N.S
               </div>
               <div>
-                <p className={`font-black text-base leading-none ${highContrast ? "text-yellow-300" : "text-white"}`}>
-                  비영리민간단체 우리원
+                <p className={`font-bold text-base leading-none ${highContrast ? "text-yellow-300" : "text-white"}`}>
+                  {branding.orgName}
                 </p>
-                <p className="text-[10px] tracking-widest mt-0.5">N·S WOORI_ONE UNION</p>
+                <p className="text-[10px] tracking-widest mt-0.5">{branding.slogan}</p>
               </div>
             </div>
             <p className="text-xs leading-relaxed max-w-sm opacity-80">
@@ -488,7 +442,7 @@ export default function App() {
 
           {/* Registration Details columns */}
           <div className="md:col-span-5 space-y-2 text-xs">
-            <h4 className={`font-extrabold text-sm ${highContrast ? "text-yellow-300" : "text-slate-250"}`}>
+            <h4 className={`font-bold text-sm ${highContrast ? "text-yellow-300" : "text-slate-250"}`}>
               기관 인가 공직 신고 사항
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 leading-relaxed font-semibold opacity-90">
@@ -503,7 +457,7 @@ export default function App() {
 
           {/* Contact Details Column */}
           <div className="md:col-span-3 space-y-3 text-xs text-left">
-            <h4 className={`font-extrabold text-sm ${highContrast ? "text-yellow-300" : "text-slate-250"}`}>
+            <h4 className={`font-bold text-sm ${highContrast ? "text-yellow-300" : "text-slate-250"}`}>
               상설 사무처 연락수단
             </h4>
             <div className="space-y-1 font-semibold">
@@ -523,8 +477,14 @@ export default function App() {
 
         {/* copyright and credentials */}
         <div className="max-w-7xl mx-auto border-t border-slate-800 mt-10 pt-6 text-center text-xs opacity-70">
-          <p className="font-semibold">
-            Copyright © 2026 비영리민간단체 우리원 & 사단법인 탈북민공익활동지원연합. All Rights Reserved.
+          <p className="font-semibold flex items-center justify-center gap-4">
+            <span>Copyright © 2026 비영리민간단체 우리원 & 사단법인 탈북민공익활동지원연합. All Rights Reserved.</span>
+            <button 
+              onClick={() => setView("admin")}
+              className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-[10px] font-bold text-slate-400 hover:text-white transition-colors uppercase tracking-widest border border-slate-700"
+            >
+              Admin
+            </button>
           </p>
         </div>
       </footer>

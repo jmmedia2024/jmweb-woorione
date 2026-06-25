@@ -8,6 +8,20 @@ service cloud.firestore {
     function isOwner(userId) {
       return request.auth.uid == userId;
     }
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.email == "new2020.jeonil@gmail.com";
+    }
+
+    // Branding & Settings: Public read, Admin write
+    match /branding/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /donations/{docId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
 
     // Members collection: Users can read/write their own profile
     match /members/{memberId} {

@@ -41,6 +41,26 @@
         "timestamp": { "type": "timestamp", "description": "발생 시간" },
         "performedBy": { "type": "string", "description": "수행자 ID" }
       }
+    },
+    "branding": {
+      "description": "기관 브랜딩 및 시스템 설정",
+      "fields": {
+        "orgName": { "type": "string", "description": "기관 공식 명칭" },
+        "slogan": { "type": "string", "description": "기관 슬로건/서브텍스트" },
+        "logoUrl": { "type": "string", "description": "공식 로고 이미지 URL" },
+        "updatedAt": { "type": "timestamp", "description": "최종 수정 일시" },
+        "updatedBy": { "type": "string", "description": "수정자 UID" }
+      }
+    },
+    "donations": {
+      "description": "후원 내역 및 재정 정보",
+      "fields": {
+        "donorName": { "type": "string", "description": "후원자명" },
+        "amount": { "type": "number", "description": "후원 금액" },
+        "date": { "type": "timestamp", "description": "후원 일시" },
+        "type": { "type": "string", "description": "후원 종류 (REGULAR, ONETIME)" },
+        "status": { "type": "string", "description": "상태 (COMPLETED, PENDING)" }
+      }
     }
   }
 }
