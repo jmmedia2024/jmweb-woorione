@@ -752,6 +752,7 @@ function SettingsTab({ highContrast }: { highContrast: boolean }) {
   });
 
   useEffect(() => {
+    let isMounted = true;
     async function loadData() {
       try {
         const [brandRes, dbRes] = await Promise.all([
@@ -759,15 +760,32 @@ function SettingsTab({ highContrast }: { highContrast: boolean }) {
           fetch("/api/db-status")
         ]);
         
-        if (brandRes.ok) setBranding(await brandRes.json());
-        if (dbRes.ok) setDbStatus(await dbRes.json());
+        if (isMounted && brandRes.ok) setBranding(await brandRes.json());
+        if (isMounted && dbRes.ok) setDbStatus(await dbRes.json());
       } catch (err) {
         console.error("Error loading settings data:", err);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     }
     loadData();
+
+    // Setup polling for DB status every 5 seconds
+    const intervalId = setInterval(async () => {
+      try {
+        const res = await fetch("/api/db-status");
+        if (res.ok && isMounted) {
+          setDbStatus(await res.json());
+        }
+      } catch (err) {
+        if (isMounted) setDbStatus({ status: 'error', error: 'Connection failed' });
+      }
+    }, 5000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(intervalId);
+    };
   }, []);
 
   const handleSave = async () => {

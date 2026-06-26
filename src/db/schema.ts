@@ -1,4 +1,4 @@
-import { pgTable, serial, text, timestamp, integer, boolean, numeric } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, timestamp, integer, boolean, numeric, index } from "drizzle-orm/pg-core";
 
 export const members = pgTable("members", {
   id: serial("id").primaryKey(),
@@ -8,6 +8,11 @@ export const members = pgTable("members", {
   level: text("level").notNull().default("일반"),
   status: text("status").notNull().default("활성"),
   joinDate: timestamp("join_date").defaultNow(),
+}, (table) => {
+  return {
+    emailIdx: index("idx_members_email").on(table.email),
+    statusIdx: index("idx_members_status").on(table.status),
+  };
 });
 
 export const contents = pgTable("contents", {
@@ -18,6 +23,11 @@ export const contents = pgTable("contents", {
   views: integer("views").default(0),
   status: text("status").notNull().default("게시"),
   publishedAt: timestamp("published_at").defaultNow(),
+}, (table) => {
+  return {
+    typeStatusIdx: index("idx_contents_type_status").on(table.type, table.status),
+    publishedAtIdx: index("idx_contents_published_at").on(table.publishedAt),
+  };
 });
 
 export const donations = pgTable("donations", {
@@ -28,6 +38,11 @@ export const donations = pgTable("donations", {
   type: text("type").notNull(),
   status: text("status").notNull().default("완료"),
   date: timestamp("date").defaultNow(),
+}, (table) => {
+  return {
+    memberIdIdx: index("idx_donations_member_id").on(table.memberId),
+    dateIdx: index("idx_donations_date").on(table.date),
+  };
 });
 
 export const consultations = pgTable("consultations", {
@@ -38,6 +53,11 @@ export const consultations = pgTable("consultations", {
   status: text("status").notNull().default("대기중"),
   manager: text("manager"),
   requestedAt: timestamp("requested_at").defaultNow(),
+}, (table) => {
+  return {
+    memberIdIdx: index("idx_consultations_member_id").on(table.memberId),
+    statusIdx: index("idx_consultations_status").on(table.status),
+  };
 });
 
 export const settings = pgTable("settings", {
