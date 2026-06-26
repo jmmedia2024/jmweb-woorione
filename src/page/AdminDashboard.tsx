@@ -357,8 +357,8 @@ export default function AdminDashboard({ highContrast }: AdminDashboardProps) {
                 {activeMenu === "settings" && <SettingsTab highContrast={highContrast} />}
                 {activeMenu === "members" && <MembersTable highContrast={highContrast} />}
                 {activeMenu === "donations" && <DonationsTable highContrast={highContrast} />}
-                {activeMenu === "posts" && <TablePlaceholder title="콘텐츠 관리 리스트" highContrast={highContrast} />}
-                {activeMenu === "counseling" && <TablePlaceholder title="심리 및 상담 접수 현황" highContrast={highContrast} />}
+                {activeMenu === "posts" && <ContentsTable highContrast={highContrast} />}
+                {activeMenu === "counseling" && <ConsultationsTable highContrast={highContrast} />}
               </motion.div>
             </AnimatePresence>
 
@@ -804,7 +804,7 @@ function SettingsTab({ highContrast }: { highContrast: boolean }) {
   return (
     <div className="space-y-8 animate-fade-in">
       {/* Database Connection Status */}
-      <div className={`p-6 rounded-[1.5rem] border flex items-center justify-between ${
+      <div className={`p-6 rounded-[1.5rem] border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${
         highContrast ? "bg-black border-yellow-400" : "bg-emerald-50 border-emerald-100"
       }`}>
         <div className="flex items-center gap-4">
@@ -814,19 +814,30 @@ function SettingsTab({ highContrast }: { highContrast: boolean }) {
           <div>
             <p className={`text-[10px] font-bold uppercase tracking-widest ${highContrast ? "text-yellow-400" : "text-emerald-700"}`}>Database Connectivity</p>
             <h4 className={`text-sm font-bold ${highContrast ? "text-white" : "text-emerald-900"}`}>
-              {dbStatus ? (
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin text-emerald-600" /> Connecting to Database...
+                </span>
+              ) : dbStatus?.status === 'active' ? (
                 <>Connected to <span className="underline decoration-2">{dbStatus.database}</span> ({dbStatus.provider})</>
               ) : (
-                <>Connecting to Database...</>
+                <span className="text-rose-600">Connection Error</span>
               )}
             </h4>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <span className={`flex h-2 w-2 rounded-full ${dbStatus ? "bg-emerald-500 animate-pulse" : "bg-slate-300"}`} />
-          <span className={`text-[10px] font-bold uppercase tracking-widest ${highContrast ? "text-yellow-400" : "text-emerald-600"}`}>
-            {dbStatus ? "Real-time Live" : "Offline"}
-          </span>
+        <div className="flex items-center gap-4">
+          {dbStatus?.pingMs !== undefined && (
+            <span className="text-[10px] font-bold text-slate-500 bg-white/60 px-2.5 py-1 rounded-md border border-slate-200">
+              {dbStatus.pingMs}ms ping
+            </span>
+          )}
+          <div className="flex items-center gap-2">
+            <span className={`flex h-2 w-2 rounded-full ${dbStatus?.status === 'active' ? "bg-emerald-500 animate-pulse" : "bg-rose-500"}`} />
+            <span className={`text-[10px] font-bold uppercase tracking-widest ${highContrast ? "text-yellow-400" : (dbStatus?.status === 'active' ? "text-emerald-600" : "text-rose-600")}`}>
+              {dbStatus?.status === 'active' ? "Real-time Live" : "Offline"}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -994,11 +1005,11 @@ function MembersTable({ highContrast }: { highContrast: boolean }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          displayName: "새 회원",
+          name: "새 회원",
           email: `new.${Date.now()}@example.com`,
-          membershipTier: "NORMAL",
-          isActive: true,
-          phoneNumber: "010-0000-0000"
+          level: "일반",
+          status: "활성",
+          phone: "010-0000-0000"
         })
       });
       fetchMembers();
@@ -1053,29 +1064,29 @@ function MembersTable({ highContrast }: { highContrast: boolean }) {
                   <td className="py-5 px-8">
                     <div className="flex items-center gap-4">
                       <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-bold text-xs">
-                        {member.displayName?.charAt(0)}
+                        {member.name?.charAt(0)}
                       </div>
                       <div>
-                        <p className="font-bold text-sm">{member.displayName}</p>
+                        <p className="font-bold text-sm">{member.name}</p>
                         <p className="text-[10px] font-bold text-slate-400">{member.email}</p>
                       </div>
                     </div>
                   </td>
                   <td className="py-5 px-8">
                     <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter ${
-                      member.membershipTier === 'GOLD' ? 'bg-amber-100 text-amber-700' : 
-                      member.membershipTier === 'BLACK' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600'
+                      member.level === 'VVIP' ? 'bg-amber-100 text-amber-700' : 
+                      member.level === '블랙' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600'
                     }`}>
-                      {member.membershipTier}
+                      {member.level}
                     </span>
                   </td>
                   <td className="py-5 px-8 text-xs font-bold text-slate-400">
-                    {member.joinDate?._seconds ? new Date(member.joinDate._seconds * 1000).toLocaleDateString() : 'N/A'}
+                    {member.joinDate ? new Date(member.joinDate).toLocaleDateString() : 'N/A'}
                   </td>
                   <td className="py-5 px-8">
                     <div className="flex items-center gap-1.5">
-                      <div className={`w-1.5 h-1.5 rounded-full ${member.isActive ? "bg-emerald-500" : "bg-slate-300"}`} />
-                      <span className="text-[10px] font-bold uppercase">{member.isActive ? "Active" : "Inactive"}</span>
+                      <div className={`w-1.5 h-1.5 rounded-full ${member.status === '활성' ? "bg-emerald-500" : "bg-slate-300"}`} />
+                      <span className="text-[10px] font-bold uppercase">{member.status}</span>
                     </div>
                   </td>
                   <td className="py-5 px-8 text-right">
@@ -1186,7 +1197,7 @@ function DonationsTable({ highContrast }: { highContrast: boolean }) {
                   <td className="py-5 px-8 font-bold text-sm">{donation.donorName}</td>
                   <td className="py-5 px-8 text-sm font-bold text-zinc-800">₩{donation.amount?.toLocaleString()}</td>
                   <td className="py-5 px-8 text-xs font-bold text-slate-400">
-                    {donation.date?._seconds ? new Date(donation.date._seconds * 1000).toLocaleDateString() : 'N/A'}
+                    {donation.date ? new Date(donation.date).toLocaleDateString() : 'N/A'}
                   </td>
                   <td className="py-5 px-8">
                     <span className="text-[10px] font-bold uppercase tracking-widest bg-slate-100 px-2 py-1 rounded-md">{donation.type}</span>
@@ -1203,6 +1214,225 @@ function DonationsTable({ highContrast }: { highContrast: boolean }) {
                 <tr>
                   <td colSpan={5} className="py-20 text-center text-slate-400 font-bold text-sm">
                     등록된 후원 내역이 없습니다.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ContentsTable({ highContrast }: { highContrast: boolean }) {
+  const [contents, setContents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchContents = async () => {
+    try {
+      const response = await fetch("/api/contents");
+      if (response.ok) {
+        const data = await response.json();
+        setContents(data);
+      }
+    } catch (err) {
+      console.error("Error fetching contents:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchContents();
+  }, []);
+
+  const handleAddContent = async () => {
+    try {
+      await fetch("/api/contents", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: "새 공지사항",
+          type: "공지",
+          author: "Admin_Jeon",
+          views: 0,
+          status: "게시"
+        })
+      });
+      fetchContents();
+    } catch (err) {
+      console.error("Error adding content:", err);
+    }
+  };
+
+  return (
+    <div className={`p-8 rounded-[1.5rem] border overflow-hidden ${
+      highContrast ? "bg-black border-yellow-400 shadow-xl" : "bg-white border-zinc-200/60 shadow-2xl shadow-slate-200/50"
+    }`}>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+            <FileText className="w-6 h-6" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold">콘텐츠 관리</h3>
+            <p className="text-xs font-bold text-slate-400">총 {contents.length}건의 콘텐츠가 있습니다.</p>
+          </div>
+        </div>
+        <button 
+          onClick={handleAddContent}
+          className="px-6 py-3 rounded-xl bg-emerald-600 text-white text-sm font-bold shadow-lg shadow-emerald-500/20 flex items-center gap-2 hover:bg-emerald-700 active:scale-95 transition-all"
+        >
+          <span>신규 작성</span>
+        </button>
+      </div>
+
+      <div className="overflow-x-auto -mx-8">
+        {loading ? (
+          <div className="py-20 flex flex-col items-center gap-4 opacity-40">
+            <Loader2 className="w-10 h-10 animate-spin" />
+          </div>
+        ) : (
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className={`text-[11px] font-bold uppercase tracking-widest ${highContrast ? "text-yellow-400 border-yellow-400/20" : "text-slate-400 bg-slate-50 border-zinc-200/60"}`}>
+                <th className="py-4 px-8 border-b">Title</th>
+                <th className="py-4 px-8 border-b">Type</th>
+                <th className="py-4 px-8 border-b">Author</th>
+                <th className="py-4 px-8 border-b">Date</th>
+                <th className="py-4 px-8 border-b">Views</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-50">
+              {contents.map((content) => (
+                <tr key={content.id} className={`group hover:bg-slate-50/50 transition-colors ${highContrast ? "hover:bg-yellow-400/5 text-yellow-300" : "text-slate-700"}`}>
+                  <td className="py-5 px-8 font-bold text-sm">{content.title}</td>
+                  <td className="py-5 px-8">
+                    <span className="text-[10px] font-bold uppercase tracking-widest bg-slate-100 px-2 py-1 rounded-md">{content.type}</span>
+                  </td>
+                  <td className="py-5 px-8 text-sm font-bold">{content.author}</td>
+                  <td className="py-5 px-8 text-xs font-bold text-slate-400">
+                    {content.publishedAt ? new Date(content.publishedAt).toLocaleDateString() : 'N/A'}
+                  </td>
+                  <td className="py-5 px-8 text-sm font-bold">{content.views?.toLocaleString()}</td>
+                </tr>
+              ))}
+              {contents.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="py-20 text-center text-slate-400 font-bold text-sm">
+                    등록된 콘텐츠가 없습니다.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ConsultationsTable({ highContrast }: { highContrast: boolean }) {
+  const [consultations, setConsultations] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchConsultations = async () => {
+    try {
+      const response = await fetch("/api/consultations");
+      if (response.ok) {
+        const data = await response.json();
+        setConsultations(data);
+      }
+    } catch (err) {
+      console.error("Error fetching consultations:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchConsultations();
+  }, []);
+
+  const handleAddConsultation = async () => {
+    try {
+      await fetch("/api/consultations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          requesterName: "김철수",
+          type: "법률 상담",
+          status: "대기중",
+          manager: "이담당"
+        })
+      });
+      fetchConsultations();
+    } catch (err) {
+      console.error("Error adding consultation:", err);
+    }
+  };
+
+  return (
+    <div className={`p-8 rounded-[1.5rem] border overflow-hidden ${
+      highContrast ? "bg-black border-yellow-400 shadow-xl" : "bg-white border-zinc-200/60 shadow-2xl shadow-slate-200/50"
+    }`}>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600">
+            <Bell className="w-6 h-6" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold">심리 및 상담 접수 현황</h3>
+            <p className="text-xs font-bold text-slate-400">총 {consultations.length}건의 접수 내역이 있습니다.</p>
+          </div>
+        </div>
+        <button 
+          onClick={handleAddConsultation}
+          className="px-6 py-3 rounded-xl bg-amber-600 text-white text-sm font-bold shadow-lg shadow-amber-500/20 flex items-center gap-2 hover:bg-amber-700 active:scale-95 transition-all"
+        >
+          <span>접수 등록</span>
+        </button>
+      </div>
+
+      <div className="overflow-x-auto -mx-8">
+        {loading ? (
+          <div className="py-20 flex flex-col items-center gap-4 opacity-40">
+            <Loader2 className="w-10 h-10 animate-spin" />
+          </div>
+        ) : (
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className={`text-[11px] font-bold uppercase tracking-widest ${highContrast ? "text-yellow-400 border-yellow-400/20" : "text-slate-400 bg-slate-50 border-zinc-200/60"}`}>
+                <th className="py-4 px-8 border-b">Requester</th>
+                <th className="py-4 px-8 border-b">Type</th>
+                <th className="py-4 px-8 border-b">Status</th>
+                <th className="py-4 px-8 border-b">Manager</th>
+                <th className="py-4 px-8 border-b">Date</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-50">
+              {consultations.map((consultation) => (
+                <tr key={consultation.id} className={`group hover:bg-slate-50/50 transition-colors ${highContrast ? "hover:bg-yellow-400/5 text-yellow-300" : "text-slate-700"}`}>
+                  <td className="py-5 px-8 font-bold text-sm">{consultation.requesterName}</td>
+                  <td className="py-5 px-8">
+                    <span className="text-[10px] font-bold uppercase tracking-widest bg-slate-100 px-2 py-1 rounded-md">{consultation.type}</span>
+                  </td>
+                  <td className="py-5 px-8">
+                    <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase ${consultation.status === '대기중' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`}>
+                      {consultation.status}
+                    </span>
+                  </td>
+                  <td className="py-5 px-8 text-sm font-bold">{consultation.manager}</td>
+                  <td className="py-5 px-8 text-xs font-bold text-slate-400">
+                    {consultation.requestedAt ? new Date(consultation.requestedAt).toLocaleDateString() : 'N/A'}
+                  </td>
+                </tr>
+              ))}
+              {consultations.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="py-20 text-center text-slate-400 font-bold text-sm">
+                    접수된 내역이 없습니다.
                   </td>
                 </tr>
               )}

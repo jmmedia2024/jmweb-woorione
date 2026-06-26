@@ -2,31 +2,13 @@ import express from "express";
 import path from "path";
 import dotenv from "dotenv";
 import { createServer as createViteServer } from "vite";
-import { initializeApp, cert, getApps } from "firebase-admin/app";
-import { getFirestore } from "firebase-admin/firestore";
+import { getDb } from "./src/db/index.js";
+import { members, contents, donations, consultations, settings } from "./src/db/schema.js";
+import { desc, eq } from "drizzle-orm";
 
 // Load environment variables
 dotenv.config();
 
-// Initialize Firebase Admin (Server-side)
-const firebaseConfig = JSON.parse(
-  process.env.FIREBASE_CONFIG || "{}"
-);
-
-console.log("[SERVER] Firebase Config keys:", Object.keys(firebaseConfig));
-console.log("[SERVER] Target Project ID:", firebaseConfig.projectId || "gen-lang-client-0904561341");
-
-let firebaseApp;
-if (!getApps().length) {
-  firebaseApp = initializeApp({
-    projectId: firebaseConfig.projectId || "gen-lang-client-0904561341"
-  });
-} else {
-  firebaseApp = getApps()[0];
-}
-
-// Support for custom database IDs
-const db = getFirestore(firebaseApp, firebaseConfig.firestoreDatabaseId || undefined);
 const app = express();
 const PORT = 3000;
 
@@ -35,13 +17,11 @@ app.use(express.json());
 // API: Branding Data
 app.get("/api/branding", async (req, res) => {
   try {
-    console.log("[SERVER] Fetching branding from Firestore...");
-    const doc = await db.collection("branding").doc("config").get();
-    if (doc.exists) {
-      console.log("[SERVER] Branding found");
-      res.json(doc.data());
+    const db = getDb();
+    const config = await db.select().from(settings).where(eq(settings.id, "config")).limit(1);
+    if (config.length > 0) {
+      res.json(config[0]);
     } else {
-      console.log("[SERVER] Branding NOT found, using defaults");
       res.json({
         orgName: "비영리민간단체 우리원",
         slogan: "N·S WOORI_ONE UNION",
@@ -49,7 +29,6 @@ app.get("/api/branding", async (req, res) => {
       });
     }
   } catch (err: any) {
-    // Even on error, return defaults to keep UI working
     res.json({
       orgName: "비영리민간단체 우리원",
       slogan: "N·S WOORI_ONE UNION",
@@ -62,108 +41,199 @@ app.get("/api/branding", async (req, res) => {
 app.post("/api/branding", async (req, res) => {
   try {
     const data = req.body;
-    await db.collection("branding").doc("config").set({
-      ...data,
-      updatedAt: new Date(),
-    });
+    const db = getDb();
+    const existing = await db.select().from(settings).where(eq(settings.id, "config")).limit(1);
+    
+    if (existing.length > 0) {
+      await db.update(settings)
+        .set({ ...data, updatedAt: new Date() })
+        .where(eq(settings.id, "config"));
+    } else {
+      await db.insert(settings).values({ id: "config", ...data, updatedAt: new Date() });
+    }
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: "Failed to save branding" });
   }
 });
 
-// API: D1 Database Info (jmweb_woori)
-app.get("/api/db-status", (req, res) => {
-  res.json({
-    status: "active",
-    provider: "Cloudflare D1 & Hyperdrive",
-    database: "jmweb_woori",
-    region: "APAC",
-    lastSynced: new Date(),
-    hyperdriveEnabled: true
-  });
-});
+// API: D1 Database Info (jmweb_woori) -> Now Hyperdrive Info
+app.get("/api/db-status", async (req, res) => {
+  try {
+    const db = getDb();
+    // Execute a simple query to verify the connection is alive
+    const startTime = Date.now();
+    await db.execute("SELECT 1");
+    const pingMs = Date.now() - startTime;
 
-// API: Cloudflare Hyperdrive Configs Proxy
-app.get("/api/cloudflare/hyperdrive", async (req, res) => {
-  const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
-  const apiToken = process.env.CLOUDFLARE_API_TOKEN;
-
-  if (!accountId || !apiToken) {
-    return res.status(401).json({ 
-      error: "Cloudflare credentials not configured in environment",
-      configured: false 
+    res.json({
+      status: "active",
+      provider: "Cloudflare Hyperdrive (Simulated Cloud SQL)",
+      database: "Postgres",
+      region: "Global",
+      pingMs,
+      lastSynced: new Date(),
+      hyperdriveEnabled: true
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      status: "error",
+      error: err.message || "Database connection failed",
+      lastSynced: new Date(),
+      hyperdriveEnabled: false
     });
   }
-
-  try {
-    const response = await fetch(
-      `https://api.cloudflare.com/client/v4/accounts/${accountId}/hyperdrive/configs`,
-      {
-        headers: {
-          "Authorization": `Bearer ${apiToken}`,
-          "Content-Type": "application/json"
-        }
-      }
-    );
-    
-    if (!response.ok) {
-      throw new Error(`Cloudflare API responded with ${response.status}`);
-    }
-    
-    const data = await response.json();
-    res.json(data);
-  } catch (err) {
-    console.error("Hyperdrive API Error:", err);
-    res.status(500).json({ error: "Failed to fetch Hyperdrive configurations" });
-  }
 });
 
-// API: Members List
+// API: Members
 app.get("/api/members", async (req, res) => {
   try {
-    const snapshot = await db.collection("members").orderBy("joinDate", "desc").get();
-    const members = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    res.json(members);
+    const db = getDb();
+    const data = await db.select().from(members).orderBy(desc(members.joinDate));
+    res.json(data);
   } catch (err) {
-    res.json([]);
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch members" });
   }
 });
 
 app.post("/api/members", async (req, res) => {
   try {
-    const data = req.body;
-    const docRef = await db.collection("members").add({
-      ...data,
+    const db = getDb();
+    const result = await db.insert(members).values({
+      ...req.body,
       joinDate: new Date(),
-    });
-    res.json({ id: docRef.id });
+    }).returning({ id: members.id });
+    res.json(result[0]);
   } catch (err) {
     res.status(500).json({ error: "Failed to add member" });
   }
 });
 
-// API: Donations List
+app.put("/api/members/:id", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const db = getDb();
+    await db.update(members).set(req.body).where(eq(members.id, id));
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to update member" });
+  }
+});
+
+app.delete("/api/members/:id", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const db = getDb();
+    await db.delete(members).where(eq(members.id, id));
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to delete member" });
+  }
+});
+
+// API: Contents
+app.get("/api/contents", async (req, res) => {
+  try {
+    const db = getDb();
+    const data = await db.select().from(contents).orderBy(desc(contents.publishedAt));
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch contents" });
+  }
+});
+
+app.post("/api/contents", async (req, res) => {
+  try {
+    const db = getDb();
+    const result = await db.insert(contents).values({
+      ...req.body,
+      publishedAt: new Date(),
+    }).returning({ id: contents.id });
+    res.json(result[0]);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to add content" });
+  }
+});
+
+app.put("/api/contents/:id", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const db = getDb();
+    await db.update(contents).set(req.body).where(eq(contents.id, id));
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to update content" });
+  }
+});
+
+app.delete("/api/contents/:id", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const db = getDb();
+    await db.delete(contents).where(eq(contents.id, id));
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to delete content" });
+  }
+});
+
+// API: Donations
 app.get("/api/donations", async (req, res) => {
   try {
-    const snapshot = await db.collection("donations").orderBy("date", "desc").get();
-    const donations = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    res.json(donations);
+    const db = getDb();
+    const data = await db.select().from(donations).orderBy(desc(donations.date));
+    res.json(data);
   } catch (err) {
-    res.json([]);
+    res.status(500).json({ error: "Failed to fetch donations" });
   }
 });
 
 app.post("/api/donations", async (req, res) => {
   try {
-    const data = req.body;
-    const docRef = await db.collection("donations").add({
-      ...data,
+    const db = getDb();
+    const result = await db.insert(donations).values({
+      ...req.body,
       date: new Date(),
-    });
-    res.json({ id: docRef.id });
+    }).returning({ id: donations.id });
+    res.json(result[0]);
   } catch (err) {
     res.status(500).json({ error: "Failed to add donation" });
+  }
+});
+
+// API: Consultations
+app.get("/api/consultations", async (req, res) => {
+  try {
+    const db = getDb();
+    const data = await db.select().from(consultations).orderBy(desc(consultations.requestedAt));
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch consultations" });
+  }
+});
+
+app.post("/api/consultations", async (req, res) => {
+  try {
+    const db = getDb();
+    const result = await db.insert(consultations).values({
+      ...req.body,
+      requestedAt: new Date(),
+    }).returning({ id: consultations.id });
+    res.json(result[0]);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to add consultation" });
+  }
+});
+
+app.put("/api/consultations/:id", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const db = getDb();
+    await db.update(consultations).set(req.body).where(eq(consultations.id, id));
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to update consultation" });
   }
 });
 
