@@ -68,6 +68,11 @@ interface AdminDashboardProps {
 }
 
 export default function AdminDashboard({ highContrast }: AdminDashboardProps) {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loginId, setLoginId] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
+
   const [activeMenu, setActiveMenu] = useState<"overview" | "members" | "posts" | "donations" | "counseling" | "settings">("overview");
   const [searchQuery, setSearchQuery] = useState("");
   const [branding, setBranding] = useState({
@@ -76,7 +81,18 @@ export default function AdminDashboard({ highContrast }: AdminDashboardProps) {
     logoUrl: "input_file_0.png"
   });
 
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (loginId === "nkjoy" && loginPassword === "wjs3603825") {
+      setIsAuthenticated(true);
+      setLoginError("");
+    } else {
+      setLoginError("아이디 또는 비밀번호가 일치하지 않습니다.");
+    }
+  };
+
   useEffect(() => {
+    if (!isAuthenticated) return;
     async function loadBranding() {
       try {
         const response = await fetch("/api/branding");
@@ -89,7 +105,7 @@ export default function AdminDashboard({ highContrast }: AdminDashboardProps) {
       }
     }
     loadBranding();
-  }, [activeMenu]); // Refresh when coming back from settings
+  }, [activeMenu, isAuthenticated]); // Refresh when coming back from settings
 
   // Sidebar Menus
   const adminMenus = [
@@ -101,65 +117,189 @@ export default function AdminDashboard({ highContrast }: AdminDashboardProps) {
     { id: "settings", label: "브랜드 및 설정", icon: Settings },
   ];
 
+  if (!isAuthenticated) {
+    return (
+      <div className={`relative min-h-[85vh] flex flex-col items-center justify-center p-6 overflow-hidden transition-all rounded-[2.5rem] ${highContrast ? "bg-black" : "bg-gradient-to-br from-indigo-50/80 via-white to-blue-50/80 border border-white/60 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]"}`}>
+        {/* Decorative background shapes for premium glassmorphism */}
+        {!highContrast && (
+          <>
+            <div className="absolute top-[10%] left-[20%] w-[30rem] h-[30rem] bg-indigo-200/30 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-pulse"></div>
+            <div className="absolute bottom-[20%] right-[20%] w-[30rem] h-[30rem] bg-blue-200/30 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-pulse" style={{ animationDelay: '2s' }}></div>
+          </>
+        )}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`relative z-10 w-full max-w-md p-10 lg:p-12 rounded-[2.5rem] ${
+            highContrast 
+              ? "bg-slate-900 border-2 border-yellow-400" 
+              : "bg-white/60 backdrop-blur-3xl border border-white shadow-[0_20px_40px_-15px_rgba(31,38,135,0.15)]"
+          }`}
+        >
+          <div className="text-center mb-10">
+            <div className={`w-20 h-20 mx-auto rounded-[1.5rem] flex items-center justify-center mb-6 shadow-xl ${
+              highContrast ? "bg-black border border-yellow-400" : "bg-gradient-to-br from-slate-900 to-indigo-900"
+            }`}>
+              <ShieldCheck className={`w-10 h-10 ${highContrast ? "text-yellow-400" : "text-white"}`} />
+            </div>
+            <h2 className={`text-3xl font-extrabold tracking-tight mb-3 ${highContrast ? "text-yellow-400" : "bg-gradient-to-br from-slate-900 to-indigo-900 bg-clip-text text-transparent"}`}>
+              관리자 로그인
+            </h2>
+            <p className={`text-sm font-semibold tracking-wide ${highContrast ? "text-yellow-200" : "text-slate-500"}`}>
+              사단법인 북한이탈주민중앙회<br/>통합 관리 시스템
+            </p>
+          </div>
+
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div>
+              <label className={`block text-[10px] font-bold uppercase tracking-widest mb-2 ml-1 ${highContrast ? "text-yellow-400" : "text-indigo-900/60"}`}>
+                아이디
+              </label>
+              <input
+                type="text"
+                value={loginId}
+                onChange={(e) => setLoginId(e.target.value)}
+                className={`w-full px-5 py-4 rounded-2xl font-bold outline-none transition-all ${
+                  highContrast 
+                    ? "bg-black border-2 border-yellow-400/50 text-yellow-300 focus:border-yellow-400 placeholder-yellow-400/30" 
+                    : "bg-white/80 backdrop-blur-md border border-slate-200/60 text-slate-900 focus:bg-white focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/10 placeholder-slate-400 shadow-sm"
+                }`}
+                placeholder="관리자 아이디를 입력하세요"
+              />
+            </div>
+            
+            <div>
+              <label className={`block text-[10px] font-bold uppercase tracking-widest mb-2 ml-1 ${highContrast ? "text-yellow-400" : "text-indigo-900/60"}`}>
+                비밀번호
+              </label>
+              <input
+                type="password"
+                value={loginPassword}
+                onChange={(e) => setLoginPassword(e.target.value)}
+                className={`w-full px-5 py-4 rounded-2xl font-bold outline-none transition-all ${
+                  highContrast 
+                    ? "bg-black border-2 border-yellow-400/50 text-yellow-300 focus:border-yellow-400 placeholder-yellow-400/30" 
+                    : "bg-white/80 backdrop-blur-md border border-slate-200/60 text-slate-900 focus:bg-white focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/10 placeholder-slate-400 shadow-sm"
+                }`}
+                placeholder="비밀번호를 입력하세요"
+              />
+            </div>
+
+            {loginError && (
+              <motion.p 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className={`text-sm font-bold text-center ${highContrast ? "text-red-400" : "text-red-500"}`}
+              >
+                {loginError}
+              </motion.p>
+            )}
+
+            <button
+              type="submit"
+              className={`relative w-full py-4.5 rounded-2xl font-bold text-base transition-all duration-300 transform active:scale-[0.98] group overflow-hidden ${
+                highContrast
+                  ? "bg-yellow-400 text-black hover:bg-yellow-300 shadow-[0_0_20px_rgba(250,204,21,0.3)]"
+                  : "bg-gradient-to-r from-indigo-600 to-blue-600 text-white hover:from-indigo-700 hover:to-blue-700 shadow-xl shadow-indigo-600/20"
+              }`}
+            >
+              {!highContrast && <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>}
+              <span className="relative z-10 flex items-center justify-center gap-2">
+                보안 시스템 접속 <ArrowUpRight className="w-4 h-4 opacity-70 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+              </span>
+            </button>
+          </form>
+        </motion.div>
+      </div>
+    );
+  }
+
   return (
-    <div className={`min-h-[80vh] transition-all rounded-[1.5rem] lg:rounded-[1.5rem] overflow-hidden ${highContrast ? "bg-slate-950 border-2 border-yellow-400" : "bg-white shadow-2xl border border-zinc-200/60"}`}>
-      <div className="p-4 lg:p-10">
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-10">
+    <div className={`min-h-[85vh] transition-all rounded-[2rem] lg:rounded-[2.5rem] overflow-hidden ${
+      highContrast 
+        ? "bg-slate-950 border-2 border-yellow-400" 
+        : "bg-white/60 backdrop-blur-3xl shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] border border-white/80 relative"
+    }`}>
+      {/* Premium Background Accents */}
+      {!highContrast && (
+        <>
+          <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-indigo-50/40 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+          <div className="absolute bottom-0 left-0 w-[30rem] h-[30rem] bg-blue-50/40 rounded-full blur-3xl translate-y-1/3 -translate-x-1/4 pointer-events-none"></div>
+        </>
+      )}
+
+      <div className="relative z-10 p-4 lg:p-10 h-full">
+        <div className="flex flex-col xl:flex-row gap-8 lg:gap-12 h-full">
           
           {/* Sidebar Navigation */}
           <aside className="w-full lg:w-80 shrink-0 space-y-4 lg:space-y-6">
-            <div className={`p-6 lg:p-8 rounded-[1.5rem] lg:rounded-[1.5rem] transition-all shadow-xl ${
-              highContrast ? "bg-slate-900 border border-yellow-400/30" : "bg-slate-900 text-white"
+            <div className={`relative p-6 lg:p-8 rounded-[1.5rem] lg:rounded-[2rem] transition-all shadow-2xl overflow-hidden ${
+              highContrast ? "bg-slate-900 border border-yellow-400/30" : "bg-gradient-to-br from-indigo-900 via-slate-900 to-black text-white"
             }`}>
-              <div className="flex items-center gap-4 mb-4 lg:mb-8">
-                <div className="w-10 h-10 lg:w-14 lg:h-14 rounded-2xl bg-white flex items-center justify-center shadow-lg p-1.5 overflow-hidden">
+              {/* Decorative glassy blur */}
+              {!highContrast && (
+                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
+              )}
+              
+              <div className="relative z-10 flex items-center gap-4 mb-4 lg:mb-8">
+                <div className="w-12 h-12 lg:w-16 lg:h-16 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center shadow-lg p-2 overflow-hidden border border-white/20">
                   <img 
                     src={branding.logoUrl} 
                     alt="우리원 로고" 
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-contain filter brightness-0 invert"
                     referrerPolicy="no-referrer"
                   />
                 </div>
                 <div>
-                  <p className="text-[8px] lg:text-[10px] font-bold text-blue-400 tracking-[0.2em] uppercase mb-0.5 lg:mb-1">Control Center</p>
-                  <p className="text-lg lg:text-lg font-bold tracking-tight">통합 관리자</p>
+                  <p className="text-[8px] lg:text-[10px] font-bold text-blue-300 tracking-[0.2em] uppercase mb-0.5 lg:mb-1">Control Center</p>
+                  <p className="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">통합 관리자</p>
                 </div>
               </div>
               
-              <div className="hidden lg:block space-y-4 pt-8 border-t border-white/10">
+              <div className="relative z-10 hidden lg:block space-y-4 pt-8 border-t border-white/10">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-bold text-white/40 uppercase">Network Status</span>
                   <div className="flex items-center gap-1.5">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    <span className="text-[10px] font-bold text-emerald-400">ACTIVE</span>
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+                    <span className="text-[10px] font-bold text-emerald-400 drop-shadow-sm">ACTIVE</span>
                   </div>
                 </div>
-                <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden border border-white/5">
                   <motion.div 
                     initial={{ width: 0 }}
                     animate={{ width: "98%" }}
-                    className="h-full bg-gradient-to-r from-blue-500 to-cyan-400" 
+                    className="h-full bg-gradient-to-r from-blue-500 via-indigo-400 to-cyan-400" 
                   />
                 </div>
               </div>
             </div>
 
-            <nav className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 scrollbar-none">
+            <nav className="flex lg:flex-col gap-3 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 scrollbar-none">
               {adminMenus.map((menu) => (
                 <button
                   key={menu.id}
                   onClick={() => setActiveMenu(menu.id as any)}
-                  className={`flex-1 lg:flex-none flex flex-col lg:flex-row items-center gap-2 lg:gap-4 px-4 lg:px-8 py-3 lg:py-5 rounded-2xl lg:rounded-[1.5rem] font-bold text-[10px] lg:text-sm transition-all group min-w-[80px] lg:min-w-0 ${
+                  className={`flex-1 lg:flex-none flex flex-col lg:flex-row items-center gap-2 lg:gap-4 px-4 lg:px-6 py-4 lg:py-5 rounded-2xl lg:rounded-[1.5rem] font-bold text-[10px] lg:text-sm transition-all duration-300 group min-w-[80px] lg:min-w-0 border ${
                     activeMenu === menu.id
-                      ? (highContrast ? "bg-yellow-400 text-black shadow-lg" : "bg-zinc-800 text-white shadow-2xl shadow-blue-600/20")
-                      : (highContrast ? "text-yellow-400 hover:bg-neutral-900 border border-transparent hover:border-yellow-400/20" : "text-zinc-500 hover:bg-white hover:shadow-lg shadow-zinc-200/50 hover:text-zinc-900")
+                      ? (highContrast 
+                          ? "bg-yellow-400 text-black border-yellow-400 shadow-lg" 
+                          : "bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-white/10 shadow-[0_8px_20px_-6px_rgba(79,70,229,0.5)] transform scale-[1.02]")
+                      : (highContrast 
+                          ? "text-yellow-400 border-transparent hover:border-yellow-400/20 hover:bg-neutral-900" 
+                          : "bg-white/40 backdrop-blur-md text-slate-600 border-white/60 hover:bg-white/80 hover:text-indigo-900 hover:shadow-lg hover:border-white")
                   }`}
                 >
-                  <menu.icon className={`w-5 h-5 lg:w-6 lg:h-6 transition-transform group-hover:scale-110 ${activeMenu === menu.id ? "" : "opacity-60"}`} />
-                  <span className="whitespace-nowrap">{menu.label}</span>
+                  <div className={`p-2 rounded-xl transition-all ${
+                    activeMenu === menu.id 
+                      ? "bg-white/20 text-white" 
+                      : "bg-white/50 group-hover:bg-indigo-100 group-hover:text-indigo-600 text-slate-500"
+                  }`}>
+                    <menu.icon className={`w-5 h-5 lg:w-5 lg:h-5 transition-transform group-hover:scale-110`} />
+                  </div>
+                  <span className="whitespace-nowrap tracking-tight">{menu.label}</span>
                   {activeMenu === menu.id && (
                     <motion.div layoutId="active-indicator" className="hidden lg:block ml-auto">
-                      <ChevronRight className="w-5 h-5" />
+                      <ChevronRight className="w-5 h-5 opacity-70" />
                     </motion.div>
                   )}
                 </button>
@@ -171,33 +311,35 @@ export default function AdminDashboard({ highContrast }: AdminDashboardProps) {
           <main className="flex-1 space-y-10 min-w-0">
             
             {/* Top Bar with Context */}
-            <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 lg:gap-8 pb-4 border-b border-zinc-200/60">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-[8px] lg:text-[10px] font-bold text-zinc-800 tracking-widest uppercase bg-zinc-100 px-3 py-1 rounded-full w-fit">
-                  <span>Administration</span>
-                  <ChevronRight className="w-3 h-3" />
-                  <span className="opacity-60">{adminMenus.find(m => m.id === activeMenu)?.label}</span>
+            <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 lg:gap-8 pb-8 border-b border-zinc-200/40">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-[9px] lg:text-[10px] font-bold text-indigo-900/60 tracking-[0.2em] uppercase bg-white/50 backdrop-blur-sm border border-white px-4 py-1.5 rounded-full w-fit shadow-sm">
+                  <span className="flex items-center gap-1.5"><LayoutDashboard className="w-3 h-3" /> Administration</span>
+                  <ChevronRight className="w-3 h-3 opacity-40" />
+                  <span className="text-indigo-600">{adminMenus.find(m => m.id === activeMenu)?.label}</span>
                 </div>
-                <h1 className={`text-lg lg:text-xl font-bold tracking-tight ${highContrast ? "text-yellow-300" : "text-zinc-900"}`}>
+                <h1 className={`text-2xl lg:text-3xl font-extrabold tracking-tight ${highContrast ? "text-yellow-300" : "bg-gradient-to-r from-slate-900 via-indigo-900 to-slate-800 bg-clip-text text-transparent"}`}>
                   {adminMenus.find(m => m.id === activeMenu)?.label}
                 </h1>
-                <p className={`text-sm lg:text-base font-bold max-w-2xl ${highContrast ? "text-yellow-400/70" : "text-slate-400"}`}>
+                <p className={`text-sm lg:text-base font-medium max-w-2xl leading-relaxed ${highContrast ? "text-yellow-400/70" : "text-slate-500"}`}>
                   우리원 통합 시스템의 실시간 관제 센터입니다. 모든 데이터의 정합성을 검증하고 운영 안정성을 최우선으로 관리합니다.
                 </p>
               </div>
 
               <div className="flex flex-wrap items-center gap-4">
-                <div className={`flex items-center border rounded-2xl px-4 lg:px-6 py-3 lg:py-4 transition-all shadow-inner w-full lg:w-auto ${
-                  highContrast ? "bg-black border-yellow-400 focus-within:ring-2 focus-within:ring-yellow-400/20" : "bg-slate-50 border-zinc-200 focus-within:bg-white focus-within:ring-4 focus-within:ring-blue-500/10 focus-within:border-blue-500/30"
+                <div className={`relative group flex items-center rounded-2xl px-5 py-4 transition-all w-full lg:w-auto ${
+                  highContrast ? "bg-black border border-yellow-400 focus-within:ring-2 focus-within:ring-yellow-400/20" : "bg-white/80 backdrop-blur-md border border-white shadow-sm focus-within:bg-white focus-within:shadow-md focus-within:ring-4 focus-within:ring-indigo-500/10"
                 }`}>
-                  <Search className="w-4 h-4 lg:w-5 lg:h-5 text-slate-400" />
+                  <Search className={`w-5 h-5 transition-colors ${highContrast ? "text-yellow-400" : "text-slate-400 group-focus-within:text-indigo-500"}`} />
                   <input 
                     type="text" 
-                    placeholder="검색어를 입력하세요..."
+                    placeholder="통합 검색..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="bg-transparent border-none outline-none ml-3 lg:ml-4 text-sm font-bold w-full md:w-80 text-slate-700"
+                    className={`bg-transparent border-none outline-none ml-4 text-sm font-semibold w-full md:w-64 placeholder-slate-400 transition-all ${highContrast ? "text-yellow-300" : "text-slate-700"}`}
                   />
+                  {/* Subtle right gradient fade for search */}
+                  {!highContrast && <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent rounded-r-2xl pointer-events-none group-focus-within:from-white"></div>}
                 </div>
               </div>
             </div>
@@ -231,39 +373,42 @@ export default function AdminDashboard({ highContrast }: AdminDashboardProps) {
 
 function OverviewTab({ highContrast }: { highContrast: boolean }) {
   const stats = [
-    { label: "전체 회원수", value: "1,254", change: "+12.4%", icon: Users, color: "text-zinc-800", bg: "bg-zinc-100/50" },
-    { label: "이번달 총 후원금", value: "₩12,850,000", change: "+8.2%", icon: Heart, color: "text-rose-600", bg: "bg-rose-50/50" },
-    { label: "활성 게시물", value: "3,482", change: "+4.1%", icon: FileText, color: "text-emerald-600", bg: "bg-emerald-50/50" },
-    { label: "상담 만족도", value: "98%", change: "+1.5%", icon: Bell, color: "text-orange-600", bg: "bg-orange-50/50" },
+    { label: "전체 회원수", value: "1,254", change: "+12.4%", icon: Users, color: "text-indigo-600", bg: "bg-indigo-50/80 border border-indigo-100" },
+    { label: "이번달 총 후원금", value: "₩12,850,000", change: "+8.2%", icon: Heart, color: "text-rose-600", bg: "bg-rose-50/80 border border-rose-100" },
+    { label: "활성 게시물", value: "3,482", change: "+4.1%", icon: FileText, color: "text-emerald-600", bg: "bg-emerald-50/80 border border-emerald-100" },
+    { label: "상담 만족도", value: "98%", change: "+1.5%", icon: Bell, color: "text-amber-600", bg: "bg-amber-50/80 border border-amber-100" },
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
         {stats.map((stat, idx) => (
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.1 }}
             key={idx} 
-            className={`p-6 lg:p-7 rounded-[1.5rem] border transition-all duration-300 group hover:-translate-y-1.5 ${
-              highContrast ? "bg-black border-yellow-400 shadow-lg shadow-yellow-400/5" : "bg-white border-white/60 shadow-lg shadow-zinc-200/50 hover:shadow-xl hover:shadow-zinc-300/60"
+            className={`relative p-6 lg:p-8 rounded-[2rem] border transition-all duration-300 group hover:-translate-y-2 overflow-hidden ${
+              highContrast ? "bg-black border-yellow-400 shadow-lg shadow-yellow-400/5" : "bg-white/80 backdrop-blur-md border-white/60 shadow-xl shadow-indigo-900/5 hover:shadow-2xl hover:shadow-indigo-900/10"
             }`}
           >
-            <div className="flex items-center justify-between mb-4 lg:mb-6">
-              <div className={`w-12 h-12 lg:w-14 lg:h-14 rounded-2xl ${stat.bg} flex items-center justify-center ${stat.color} shadow-inner`}>
+            {/* Subtle glow effect */}
+            {!highContrast && <div className={`absolute -right-6 -top-6 w-32 h-32 rounded-full blur-3xl opacity-0 group-hover:opacity-40 transition-opacity duration-500 pointer-events-none ${stat.bg.split(' ')[0]}`}></div>}
+            
+            <div className="relative z-10 flex items-center justify-between mb-6 lg:mb-8">
+              <div className={`w-14 h-14 lg:w-16 lg:h-16 rounded-[1.25rem] ${stat.bg} flex items-center justify-center ${stat.color} shadow-sm group-hover:scale-110 transition-transform duration-300`}>
                 <stat.icon className="w-6 h-6 lg:w-7 lg:h-7" />
               </div>
-              <div className={`flex items-center gap-1 px-2 py-0.5 lg:px-2.5 lg:py-1 rounded-full text-[9px] lg:text-[10px] font-bold ${
-                stat.change.startsWith("+") ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"
+              <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] lg:text-xs font-bold shadow-sm border ${
+                stat.change.startsWith("+") ? "bg-emerald-50 border-emerald-100 text-emerald-600" : "bg-rose-50 border-rose-100 text-rose-600"
               }`}>
-                <ArrowUpRight className="w-3 h-3" />
+                <ArrowUpRight className="w-3.5 h-3.5" />
                 {stat.change}
               </div>
             </div>
-            <p className="text-[10px] lg:text-[11px] font-bold text-slate-400 tracking-wider uppercase mb-1">{stat.label}</p>
-            <p className={`text-xl lg:text-lg font-bold tracking-tight ${highContrast ? "text-yellow-300" : "text-zinc-900"}`}>{stat.value}</p>
+            <p className="relative z-10 text-[11px] lg:text-xs font-bold text-slate-500 tracking-widest uppercase mb-2">{stat.label}</p>
+            <p className={`relative z-10 text-3xl lg:text-3xl font-extrabold tracking-tight ${highContrast ? "text-yellow-300" : "bg-gradient-to-br from-slate-900 to-slate-700 bg-clip-text text-transparent"}`}>{stat.value}</p>
           </motion.div>
         ))}
       </div>
@@ -271,20 +416,22 @@ function OverviewTab({ highContrast }: { highContrast: boolean }) {
       {/* Analytics Charts */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
         {/* Monthly Donation Area Chart */}
-        <div className={`p-10 rounded-[1.5rem] border ${
-          highContrast ? "bg-black border-yellow-400 shadow-xl" : "bg-white border-white/50 shadow-lg shadow-zinc-200/50"
+        <div className={`p-8 lg:p-10 rounded-[2rem] border transition-all duration-300 ${
+          highContrast ? "bg-black border-yellow-400 shadow-xl" : "bg-white/80 backdrop-blur-xl border-white shadow-xl shadow-indigo-900/5 hover:shadow-2xl hover:shadow-indigo-900/10"
         }`}>
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h3 className="text-xl font-bold flex items-center gap-2">
-                <Heart className="w-6 h-6 text-rose-500" />
+              <h3 className="text-xl font-bold flex items-center gap-3">
+                <div className="p-2 bg-rose-50 rounded-xl">
+                  <Heart className="w-5 h-5 text-rose-500" />
+                </div>
                 <span>월별 후원금 흐름</span>
               </h3>
-              <p className="text-xs font-bold text-slate-400 mt-1">지난 6개월간의 정기/일시 후원금 합계</p>
+              <p className="text-xs font-semibold text-slate-400 mt-2">지난 6개월간의 정기/일시 후원금 합계</p>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-zinc-1000" />
-              <span className="text-[10px] font-bold text-zinc-500 uppercase">Donation Amount</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)]" />
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Donation Amount</span>
             </div>
           </div>
           
@@ -293,8 +440,8 @@ function OverviewTab({ highContrast }: { highContrast: boolean }) {
               <AreaChart data={monthlyPerformanceData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorDonations" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.4}/>
+                    <stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={highContrast ? "#333" : "#f1f5f9"} />
@@ -302,34 +449,36 @@ function OverviewTab({ highContrast }: { highContrast: boolean }) {
                   dataKey="month" 
                   axisLine={false} 
                   tickLine={false} 
-                  tick={{ fontSize: 10, fontWeight: 700, fill: highContrast ? "#eab308" : "#94a3b8" }}
+                  tick={{ fontSize: 11, fontWeight: 700, fill: highContrast ? "#eab308" : "#94a3b8" }}
                   dy={10}
                 />
                 <YAxis 
                   axisLine={false} 
                   tickLine={false} 
-                  tick={{ fontSize: 10, fontWeight: 700, fill: highContrast ? "#eab308" : "#94a3b8" }}
+                  tick={{ fontSize: 11, fontWeight: 700, fill: highContrast ? "#eab308" : "#94a3b8" }}
                   tickFormatter={(value) => `${(value / 10000).toLocaleString()}만`}
                 />
                 <Tooltip 
                   contentStyle={{ 
-                    borderRadius: '16px', 
-                    border: 'none', 
-                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-                    backgroundColor: highContrast ? '#111' : '#fff',
+                    borderRadius: '20px', 
+                    border: '1px solid rgba(255,255,255,0.8)', 
+                    boxShadow: '0 20px 40px -15px rgba(0, 0, 0, 0.1)',
+                    backgroundColor: highContrast ? '#111' : 'rgba(255,255,255,0.95)',
+                    backdropFilter: 'blur(8px)',
                     color: highContrast ? '#fbbf24' : '#1e293b'
                   }}
-                  itemStyle={{ fontWeight: 800, fontSize: '12px' }}
-                  labelStyle={{ fontWeight: 900, marginBottom: '4px', fontSize: '10px', color: '#94a3b8' }}
+                  itemStyle={{ fontWeight: 800, fontSize: '13px' }}
+                  labelStyle={{ fontWeight: 900, marginBottom: '6px', fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase' }}
                   formatter={(value: number) => [`₩${value.toLocaleString()}`, '후원금']}
                 />
                 <Area 
                   type="monotone" 
                   dataKey="donations" 
-                  stroke="#3b82f6" 
+                  stroke="#4f46e5" 
                   strokeWidth={4}
                   fillOpacity={1} 
                   fill="url(#colorDonations)" 
+                  activeDot={{ r: 6, strokeWidth: 0, fill: "#4f46e5" }}
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -337,20 +486,22 @@ function OverviewTab({ highContrast }: { highContrast: boolean }) {
         </div>
 
         {/* Member Growth Bar Chart */}
-        <div className={`p-10 rounded-[1.5rem] border ${
-          highContrast ? "bg-black border-yellow-400 shadow-xl" : "bg-white border-white/50 shadow-lg shadow-zinc-200/50"
+        <div className={`p-8 lg:p-10 rounded-[2rem] border transition-all duration-300 ${
+          highContrast ? "bg-black border-yellow-400 shadow-xl" : "bg-white/80 backdrop-blur-xl border-white shadow-xl shadow-indigo-900/5 hover:shadow-2xl hover:shadow-indigo-900/10"
         }`}>
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h3 className="text-xl font-bold flex items-center gap-2">
-                <UserPlus className="w-6 h-6 text-zinc-800" />
+              <h3 className="text-xl font-bold flex items-center gap-3">
+                <div className="p-2 bg-indigo-50 rounded-xl">
+                  <UserPlus className="w-5 h-5 text-indigo-600" />
+                </div>
                 <span>신규 회원 증가율</span>
               </h3>
-              <p className="text-xs font-bold text-slate-400 mt-1">월별 신규 멤버십 가입자 통계</p>
+              <p className="text-xs font-semibold text-slate-400 mt-2">월별 신규 멤버십 가입자 통계</p>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-emerald-500" />
-              <span className="text-[10px] font-bold text-zinc-500 uppercase">New Members</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">New Members</span>
             </div>
           </div>
 
@@ -362,33 +513,34 @@ function OverviewTab({ highContrast }: { highContrast: boolean }) {
                   dataKey="month" 
                   axisLine={false} 
                   tickLine={false} 
-                  tick={{ fontSize: 10, fontWeight: 700, fill: highContrast ? "#eab308" : "#94a3b8" }}
+                  tick={{ fontSize: 11, fontWeight: 700, fill: highContrast ? "#eab308" : "#94a3b8" }}
                   dy={10}
                 />
                 <YAxis 
                   axisLine={false} 
                   tickLine={false} 
-                  tick={{ fontSize: 10, fontWeight: 700, fill: highContrast ? "#eab308" : "#94a3b8" }}
+                  tick={{ fontSize: 11, fontWeight: 700, fill: highContrast ? "#eab308" : "#94a3b8" }}
                 />
                 <Tooltip 
-                  cursor={{ fill: 'transparent' }}
+                  cursor={{ fill: 'rgba(79, 70, 229, 0.05)' }}
                   contentStyle={{ 
-                    borderRadius: '16px', 
-                    border: 'none', 
-                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-                    backgroundColor: highContrast ? '#111' : '#fff'
+                    borderRadius: '20px', 
+                    border: '1px solid rgba(255,255,255,0.8)', 
+                    boxShadow: '0 20px 40px -15px rgba(0, 0, 0, 0.1)',
+                    backgroundColor: highContrast ? '#111' : 'rgba(255,255,255,0.95)',
+                    backdropFilter: 'blur(8px)'
                   }}
-                  itemStyle={{ fontWeight: 800, fontSize: '12px', color: '#10b981' }}
-                  labelStyle={{ fontWeight: 900, marginBottom: '4px', fontSize: '10px', color: '#94a3b8' }}
+                  itemStyle={{ fontWeight: 800, fontSize: '13px', color: '#10b981' }}
+                  labelStyle={{ fontWeight: 900, marginBottom: '6px', fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase' }}
                   formatter={(value: number) => [`${value}명`, '신규 회원']}
                 />
                 <Bar 
                   dataKey="members" 
-                  radius={[10, 10, 10, 10]} 
-                  barSize={32}
+                  radius={[12, 12, 12, 12]} 
+                  barSize={36}
                 >
                   {monthlyPerformanceData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={index === monthlyPerformanceData.length - 1 ? '#10b981' : '#3b82f6'} fillOpacity={0.8} />
+                    <Cell key={`cell-${index}`} fill={index === monthlyPerformanceData.length - 1 ? '#10b981' : '#c7d2fe'} fillOpacity={1} />
                   ))}
                 </Bar>
               </BarChart>
@@ -399,39 +551,41 @@ function OverviewTab({ highContrast }: { highContrast: boolean }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* System Activity Log */}
-        <div className={`lg:col-span-2 p-10 rounded-[1.5rem] border ${
-          highContrast ? "bg-black border-yellow-400 shadow-xl" : "bg-white border-white/50 shadow-lg shadow-zinc-200/50"
+        <div className={`lg:col-span-2 p-8 lg:p-10 rounded-[2rem] border transition-all duration-300 ${
+          highContrast ? "bg-black border-yellow-400 shadow-xl" : "bg-white/80 backdrop-blur-xl border-white shadow-xl shadow-indigo-900/5 hover:shadow-2xl hover:shadow-indigo-900/10"
         }`}>
-          <div className="flex items-center justify-between mb-8">
-            <h3 className="text-lg font-bold flex items-center gap-3">
-              <TrendingUp className="w-7 h-7 text-zinc-800" />
+          <div className="flex items-center justify-between mb-10">
+            <h3 className="text-xl font-bold flex items-center gap-3">
+              <div className="p-2 bg-slate-100 rounded-xl">
+                <TrendingUp className="w-5 h-5 text-slate-800" />
+              </div>
               <span>실시간 시스템 관제</span>
             </h3>
-            <button className="text-xs font-bold text-zinc-800 hover:underline">전체 로그 보기</button>
+            <button className="text-[11px] lg:text-xs font-bold text-indigo-600 bg-indigo-50 px-4 py-2 rounded-full hover:bg-indigo-100 transition-colors">전체 로그 보기</button>
           </div>
 
           <div className="space-y-6">
             {[
-              { time: "2분 전", user: "Admin_Jeon", action: "공지사항 '30주년 한정판 블랙 카드 발급 안내' 게시", category: "CONTENTS", color: "bg-zinc-1000" },
+              { time: "2분 전", user: "Admin_Jeon", action: "공지사항 '30주년 한정판 블랙 카드 발급 안내' 게시", category: "CONTENTS", color: "bg-slate-800" },
               { time: "15분 전", user: "System", action: "박효신 회원 정기 후원 결제 승인 (KRW 50,000)", category: "FINANCE", color: "bg-emerald-500" },
               { time: "40분 전", user: "Manager_Lee", action: "상담번호 #A-10243 '긴급 생계 지원' 상태를 '완료'로 변경", category: "SERVICE", color: "bg-orange-500" },
-              { time: "1시간 전", user: "Admin_Jeon", action: "서버 백업 스케줄 실행 및 Google Cloud Storage 동기화", category: "SYSTEM", color: "bg-slate-800" },
-              { time: "3시간 전", user: "System", action: "신규 회원 '강동원' 가입 및 이메일 인증 발송", category: "USER", color: "bg-purple-500" },
+              { time: "1시간 전", user: "Admin_Jeon", action: "서버 백업 스케줄 실행 및 Google Cloud Storage 동기화", category: "SYSTEM", color: "bg-indigo-600" },
+              { time: "3시간 전", user: "System", action: "신규 회원 '강동원' 가입 및 이메일 인증 발송", category: "USER", color: "bg-blue-500" },
             ].map((log, idx) => (
-              <div key={idx} className="group flex gap-5 items-start">
+              <div key={idx} className="group flex gap-6 items-start">
                 <div className="flex flex-col items-center pt-1.5">
-                  <div className={`w-2.5 h-2.5 rounded-full ring-4 ring-white transition-all group-hover:scale-125 ${log.color} ${highContrast ? "ring-black" : ""}`} />
-                  {idx !== 4 && <div className="w-0.5 flex-1 bg-slate-100 my-2" />}
+                  <div className={`w-3 h-3 rounded-full ring-4 ring-white shadow-sm transition-all group-hover:scale-125 ${log.color} ${highContrast ? "ring-black" : ""}`} />
+                  {idx !== 4 && <div className="w-[2px] flex-1 bg-slate-100 my-2" />}
                 </div>
                 <div className="flex-1 pb-4">
-                  <div className="flex items-center justify-between mb-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold bg-slate-100 text-zinc-500 px-2 py-0.5 rounded-md uppercase">{log.category}</span>
-                      <span className="text-xs font-bold text-zinc-800">{log.user}</span>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2.5">
+                      <span className="text-[10px] font-bold bg-slate-100/80 text-slate-500 px-2.5 py-1 rounded-lg uppercase tracking-wider">{log.category}</span>
+                      <span className="text-[13px] font-bold text-slate-800">{log.user}</span>
                     </div>
-                    <span className="text-[10px] font-bold text-slate-300">{log.time}</span>
+                    <span className="text-[11px] font-bold text-slate-400">{log.time}</span>
                   </div>
-                  <p className={`text-sm font-bold leading-snug ${highContrast ? "text-slate-300" : "text-slate-700"}`}>
+                  <p className={`text-sm font-semibold leading-relaxed ${highContrast ? "text-slate-300" : "text-slate-600"}`}>
                     {log.action}
                   </p>
                 </div>
@@ -442,59 +596,67 @@ function OverviewTab({ highContrast }: { highContrast: boolean }) {
 
         {/* Database & Infrastructure */}
         <div className="space-y-8">
-          <div className={`p-10 rounded-[1.5rem] border ${
-            highContrast ? "bg-black border-yellow-400 shadow-xl" : "bg-white border-white/50 shadow-lg shadow-zinc-200/50"
+          <div className={`p-8 lg:p-10 rounded-[2rem] border transition-all duration-300 ${
+            highContrast ? "bg-black border-yellow-400 shadow-xl" : "bg-white/80 backdrop-blur-xl border-white shadow-xl shadow-indigo-900/5 hover:shadow-2xl hover:shadow-indigo-900/10"
           }`}>
-            <h3 className="text-xl font-bold mb-6 flex items-center gap-3">
-              <Database className="w-6 h-6 text-emerald-600" />
+            <h3 className="text-xl font-bold mb-8 flex items-center gap-3">
+              <div className="p-2 bg-emerald-50 rounded-xl">
+                <Database className="w-5 h-5 text-emerald-600" />
+              </div>
               <span>Infra Status</span>
             </h3>
             
             <div className="space-y-8">
               <div className="space-y-3">
                 <div className="flex justify-between items-end">
-                  <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Storage Performance</p>
-                  <p className="text-sm font-bold text-zinc-900">7.2 GB <span className="text-slate-300">/ 25 GB</span></p>
+                  <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Storage Performance</p>
+                  <p className="text-sm font-bold text-slate-800">7.2 GB <span className="text-slate-400">/ 25 GB</span></p>
                 </div>
-                <div className="h-3 bg-slate-100 rounded-full overflow-hidden p-0.5">
+                <div className="h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
                   <motion.div 
                     initial={{ width: 0 }}
                     animate={{ width: "28.8%" }}
-                    className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full" 
+                    className="h-full bg-gradient-to-r from-emerald-500 to-teal-400" 
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 bg-slate-50 rounded-2xl border border-zinc-200/60/50">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Live Latency</p>
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-xl font-bold text-zinc-900">28ms</span>
+                <div className="p-5 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Live Latency</p>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+                    <span className="text-xl font-extrabold text-slate-800">28<span className="text-sm text-slate-400 font-bold ml-1">ms</span></span>
                   </div>
                 </div>
-                <div className="p-4 bg-slate-50 rounded-2xl border border-zinc-200/60/50">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Server Load</p>
-                  <span className="text-xl font-bold text-zinc-900">14%</span>
+                <div className="p-5 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Server Load</p>
+                  <span className="text-xl font-extrabold text-slate-800">14<span className="text-sm text-slate-400 font-bold ml-1">%</span></span>
                 </div>
               </div>
 
-              <button className="w-full py-4.5 rounded-2xl bg-slate-900 text-white font-bold text-xs flex items-center justify-center gap-2.5 hover:bg-slate-800 transition-all shadow-lg active:scale-95 group">
-                <Download className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" />
+              <button className="w-full py-4 rounded-2xl bg-gradient-to-r from-slate-900 to-slate-800 text-white font-bold text-[13px] flex items-center justify-center gap-2.5 hover:from-slate-800 hover:to-slate-700 transition-all shadow-lg active:scale-[0.98] group">
+                <Download className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform text-slate-300" />
                 <span>Full SQL Dump Export (.zip)</span>
               </button>
             </div>
           </div>
 
-          <div className={`p-8 rounded-[1.5rem] bg-gradient-to-br from-indigo-600 to-blue-700 text-white shadow-xl shadow-blue-500/30`}>
-            <div className="flex items-center gap-3 mb-4">
-              <AlertCircle className="w-6 h-6 text-blue-200" />
-              <h4 className="text-lg font-bold">Admin Notice</h4>
+          <div className={`relative p-8 lg:p-10 rounded-[2rem] overflow-hidden text-white shadow-xl shadow-indigo-900/20`}>
+            {/* Glassy dynamic background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-blue-600 to-indigo-800"></div>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
+            
+            <div className="relative z-10 flex items-center gap-3 mb-5">
+              <div className="p-2 bg-white/20 backdrop-blur-md rounded-xl border border-white/20">
+                <AlertCircle className="w-5 h-5 text-white" />
+              </div>
+              <h4 className="text-lg font-extrabold tracking-tight">Admin Notice</h4>
             </div>
-            <p className="text-xs font-bold text-blue-100 leading-relaxed mb-6">
+            <p className="relative z-10 text-[13px] font-medium text-blue-100 leading-relaxed mb-8">
               다음 정기 서버 점검은 2026년 7월 1일 새벽 2시로 예정되어 있습니다. 백업 주기 설정을 확인해 주세요.
             </p>
-            <button className="w-full py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white text-[11px] font-bold transition-all border border-white/20">
+            <button className="relative z-10 w-full py-3.5 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md text-white text-[13px] font-bold transition-all border border-white/20 active:scale-[0.98]">
               세부 스케줄 확인
             </button>
           </div>

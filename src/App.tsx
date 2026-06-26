@@ -204,7 +204,7 @@ export default function App() {
     <div className={`min-h-screen flex flex-col font-sans tracking-tight transition-colors duration-500 ease-in-out ${
       highContrast 
         ? "bg-black text-yellow-300" 
-        : "bg-[#FAFAFA] text-zinc-900 selection:bg-indigo-100 selection:text-indigo-900"
+        : "bg-gradient-to-br from-[#FAFCFF] via-white to-[#F5F3FF] text-zinc-900 selection:bg-indigo-100 selection:text-indigo-900"
     }`}>
       
       {/* Universal GNB accessibility header */}

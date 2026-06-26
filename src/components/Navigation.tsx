@@ -103,7 +103,7 @@ export default function Navigation({
     <header className={`sticky top-0 z-50 border-b transition-all duration-500 ease-in-out ${
       highContrast 
         ? "bg-black border-yellow-400 text-yellow-300 shadow-none" 
-        : "bg-white border-white/40 text-zinc-800 shadow-lg shadow-zinc-200/50"
+        : "bg-white/60 backdrop-blur-2xl border-white/80 text-zinc-800 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)]"
     }`}>
       {/* Main GNB Bar */}
       <div className="max-w-7xl mx-auto px-4 h-22 flex items-center justify-between">
